@@ -182,7 +182,7 @@
             },
 
             updateProdAvail() {
-                fetch('http://localhost:3000/collections/Lessons')
+                fetch('https://backend-mdx.onrender.com')
                     .then(response => response.json())
                     .then(data => {
                         data.forEach(updatedLesson => {
