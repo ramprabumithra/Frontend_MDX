@@ -166,34 +166,34 @@
         
         <p>
             <strong>First Name:</strong>
-            <input v-model="order.firstName" type="text" @input="saveDetails" />
+            <input v-model="order.firstName" type="text" @input="saveDetails('firstName')" />
         </p>
         <p>
             <strong>Last Name:</strong>
-            <input v-model="order.lastName" type="text" @input="saveDetails" />
+            <input v-model="order.lastName" type="text" @input="saveDetails('lastName')" />
         </p>
         <p>
             <strong>Address:</strong>
-            <input v-model="order.address" type="text" @input="saveDetails" />
+            <input v-model="order.address" type="text" @input="saveDetails('address')" />
         </p>
         <p>
             <strong>City:</strong>
-            <select v-model="order.city" @change="saveDetails">
+            <select v-model="order.city" @change="saveDetails('city')">
                 <option v-for="(city, key) in cities" :value="city">{{ key }}</option>
             </select>
         </p>
         <p>
             <strong>Zip/Postal Code:</strong>
-            <input v-model.number="order.zip" type="number" @input="saveDetails" />
+            <input v-model.number="order.zip" type="number" @input="saveDetails('zip')" />
         </p>
         <p>
-            <input type="checkbox" id="gift" v-model="order.gift" @change="saveDetails">
+            <input type="checkbox" id="gift" v-model="order.gift" @change="saveDetails('gift')">
             <label for="gift">Send as a Gift</label>
         </p>
         <p>
-            <input type="radio" id="home" value="Home" v-model="order.method" @change="saveDetails">
+            <input type="radio" id="home" value="Home" v-model="order.method" @change="saveDetails('method')">
             <label for="home">Home</label>
-            <input type="radio" id="business" value="Business" v-model="order.method" @change="saveDetails">
+            <input type="radio" id="business" value="Business" v-model="order.method" @change="saveDetails('method')">
             <label for="business">Business</label>
         </p>
 
@@ -227,7 +227,6 @@
     },
     computed: {
         completedForm() {
-            // Check if all the fields are filled and valid
             return this.order.firstName &&
                    this.order.lastName &&
                    this.order.address &&
@@ -246,15 +245,15 @@
             if (field === 'firstName' || field === 'lastName' || field === 'address') {
                 if (containsNumber(this.order[field])) {
                     alert(`${field.charAt(0).toUpperCase() + field.slice(1)} should not contain numbers.`);
-                    this.order[field] = ''; // Reset invalid field
+                    this.order[field] = '';
                     return false;
                 }
             }
 
-            if (field === 'zip') {
+            if (field === 'zip' && this.order.zip !== '') {
                 if (!/^\d+$/.test(this.order.zip)) {
                     alert('Zip/Postal Code should contain only numbers.');
-                    this.order.zip = ''; // Reset invalid zip
+                    this.order.zip = '';
                     return false;
                 }
             }
@@ -262,8 +261,8 @@
             return true;
         },
 
-        saveDetails() {
-            if (this.validateInputs()) {
+        saveDetails(field) {
+            if (this.validateInputs(field)) {
                 localStorage.setItem('order', JSON.stringify(this.order));
             }
         },
@@ -295,31 +294,9 @@
             localStorage.removeItem('order');
         },
         submitForm() {
-            const orderData = {
-                ...this.order,
-                lessons: this.cart.map(item => ({
-                    lessonTitle: item.title,
-                    price: item.price,
-                    quantity: item.quantity
-                }))
-            };
-
-            fetch('https://backend-mdx.onrender.com/placeOrder', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(orderData),
-            })
-            .then(response => response.json())
-            .then(data => {
-                this.clearCart();
-                this.clearDetails();
-                alert('Order placed successfully!');
-            })
-            .catch(error => {
-                alert('Failed to place order.');
-            });
+            alert('Order placed successfully!');
+            this.clearCart();
+            this.clearDetails();
         }
     },
     mounted() {
