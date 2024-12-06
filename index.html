@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The Middlesex School - This website offers an online store for After school classes for the convenience of parents and students.">
@@ -165,13 +164,10 @@
             },
 
             prodAvailServer(productId, updatedAvailability) {
-                fetch('https://backend-mdx.onrender.com/collections/Lessons', {
+                fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id: productId,
-                        availability: updatedAvailability
-                    })
+                    body: JSON.stringify({ availability: updatedAvailability })
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -182,22 +178,27 @@
                 });
             },
 
+
             updateProdAvail() {
                 fetch('https://backend-mdx.onrender.com/collections/Lessons')
                     .then(response => response.json())
                     .then(data => {
-                        data.forEach(updatedLesson => {
-                            const product = this.products.find(p => p.id === updatedLesson.id);
-                            if (product) {
-                                product.availability = updatedLesson.availability;
-                            }
-                        });
+                        this.products = data.map(lesson => ({
+                            id: lesson.id, 
+                            title: lesson.title,
+                            location: lesson.location,
+                            availability: lesson.availability,
+                            price: lesson.price,
+                            img: lesson.img || 'assets/default-image.png',
+                            rating: lesson.rating || 0
+                        }));
                         this.$forceUpdate();
                     })
                     .catch(error => {
                         console.error('Error fetching updated availability:', error);
                     });
             },
+
 
             sortToggle() {
                 this.showSort = !this.showSort;
