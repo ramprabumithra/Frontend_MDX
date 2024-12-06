@@ -165,9 +165,13 @@
 
             prodAvailServer(productId, updatedAvailability) {
                 fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, {
+
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ availability: updatedAvailability })
+                    body: JSON.stringify({
+                        id: productId,
+                        availability: updatedAvailability
+                    })
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -178,27 +182,22 @@
                 });
             },
 
-
             updateProdAvail() {
-                fetch('https://backend-mdx.onrender.com/collections/Lessons')
+                fetch('fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}')
                     .then(response => response.json())
                     .then(data => {
-                        this.products = data.map(lesson => ({
-                            id: lesson.id, 
-                            title: lesson.title,
-                            location: lesson.location,
-                            availability: lesson.availability,
-                            price: lesson.price,
-                            img: lesson.img || 'assets/default-image.png',
-                            rating: lesson.rating || 0
-                        }));
+                        data.forEach(updatedLesson => {
+                            const product = this.products.find(p => p.id === updatedLesson.id);
+                            if (product) {
+                                product.availability = updatedLesson.availability;
+                            }
+                        });
                         this.$forceUpdate();
                     })
                     .catch(error => {
                         console.error('Error fetching updated availability:', error);
                     });
             },
-
 
             sortToggle() {
                 this.showSort = !this.showSort;
