@@ -240,23 +240,28 @@
     }
     },
     methods: {
-        validateInputs() {
-            const textFields = [this.order.firstName, this.order.lastName, this.order.address];
-            const zipCode = this.order.zip;
-
+        validateInputs(field) {
             const containsNumber = (text) => /\d/.test(text);
-            if (textFields.some(containsNumber)) {
-                alert('Text fields should not contain numbers.');
-                return false;
+
+            if (field === 'firstName' || field === 'lastName' || field === 'address') {
+                if (containsNumber(this.order[field])) {
+                    alert(`${field.charAt(0).toUpperCase() + field.slice(1)} should not contain numbers.`);
+                    this.order[field] = ''; // Reset invalid field
+                    return false;
+                }
             }
 
-            if (!/^\d+$/.test(zipCode)) {
-                alert('Zip/Postal Code should contain only numbers.');
-                return false;
+            if (field === 'zip') {
+                if (!/^\d+$/.test(this.order.zip)) {
+                    alert('Zip/Postal Code should contain only numbers.');
+                    this.order.zip = ''; // Reset invalid zip
+                    return false;
+                }
             }
 
             return true;
         },
+
         saveDetails() {
             if (this.validateInputs()) {
                 localStorage.setItem('order', JSON.stringify(this.order));
@@ -299,7 +304,7 @@
                 }))
             };
 
-            fetch('http://localhost:3000/placeOrder', {
+            fetch('https://backend-mdx.onrender.com/placeOrder', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
