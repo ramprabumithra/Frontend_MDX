@@ -172,7 +172,13 @@
                         availability: updatedAvailability
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        // If response status is not OK (i.e., 2xx range), throw an error
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Product availability updated successfully:', data);
                 })
@@ -180,6 +186,7 @@
                     console.error('Error updating product availability:', error);
                 });
             },
+
 
             updateProdAvail() {
                 fetch('https://backend-mdx.onrender.com/collections/Lessons')
