@@ -165,7 +165,7 @@
 
         prodAvailServer(productId, updatedAvailability) {
             console.log('Product ID:', productId);
-            fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, {
+            fetch(`https://backend-mdx.onrender.com/collections/Lessons`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
