@@ -147,7 +147,7 @@
                     }
                 },
                 prodAvailServer(productId, updatedAvailability) {
-                    fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, {
+                    fetch(`https://localhost:3000/collections/Lessons/${productId}`, {
 
 
                         method: 'PATCH',
@@ -159,7 +159,7 @@
                     .catch(error => console.error('Error updating availability:', error));
                 },
                 updateProdAvail() {
-                    fetch('https://backend-mdx.onrender.com/collections/Lessons')
+                    fetch('https://localhost:3000/collections/Lessons')
                         .then(response => response.json())
                         .then(data => {
                             data.forEach(updatedLesson => {
