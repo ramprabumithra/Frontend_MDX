@@ -164,7 +164,7 @@
             },
 
         prodAvailServer(productId, updatedAvailability) {
-            fetch('https://backend-mdx.onrender.com/collections/Lessons', {
+            fetch('https://backend-mdx.onrender.com/collections/Lessons/${productId}', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
