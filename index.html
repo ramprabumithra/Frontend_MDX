@@ -164,12 +164,11 @@
             },
 
         prodAvailServer(productId, updatedAvailability) {
-            console.log('Product ID:', productId);
-            fetch(`https://backend-mdx.onrender.com/collections/Lessons`, {
-                method: 'PATCH',
+            fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    _id: productId,
+                    productId: productId,
                     availability: updatedAvailability
                 })
             })
@@ -184,12 +183,13 @@
 
 
 
+
             updateProdAvail() {
                 fetch("https://backend-mdx.onrender.com/collections/Lessons")
                     .then(response => response.json())
                     .then(data => {
                         data.forEach(updatedLesson => {
-                            const product = this.products.find(p => p.id === updatedLesson.id);
+                            const product = this.products.find(p => p.id === updatedLesson.productId);
                             if (product) {
                                 product.availability = updatedLesson.availability;
                             }
@@ -200,6 +200,7 @@
                         console.error('Error fetching updated availability:', error);
                     });
             },
+            
 
             sortToggle() {
                 
