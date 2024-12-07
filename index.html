@@ -163,29 +163,24 @@
                 }
             },
 
-            prodAvailServer(productId, updatedAvailability) {
-                fetch('https://backend-mdx.onrender.com/collections/Lessons', {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id: productId,
-                        availability: updatedAvailability
-                    })
+        prodAvailServer(productId, updatedAvailability) {
+            fetch('https://backend-mdx.onrender.com/collections/Lessons', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: productId,
+                    availability: updatedAvailability
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        // If response status is not OK (i.e., 2xx range), throw an error
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Product availability updated successfully:', data);
-                })
-                .catch(error => {
-                    console.error('Error updating product availability:', error);
-                });
-            },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Product availability updated successfully:', data);
+            })
+            .catch(error => {
+                console.error('Error updating product availability:', error);
+            });
+        },
+
 
 
             updateProdAvail() {
