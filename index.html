@@ -163,33 +163,30 @@
                 }
             },
 
-        prodAvailServer(productId, updatedAvailability) {
-            fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    productId: productId,
-                    availability: updatedAvailability
+            prodAvailServer(productId, updatedAvailability) {
+                fetch('https://backend-mdx.onrender.com/collections/Lessons', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: productId,
+                        availability: updatedAvailability
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Product availability updated successfully:', data);
-            })
-            .catch(error => {
-                console.error('Error updating product availability:', error);
-            });
-        },
-
-
-
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Product availability updated successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error updating product availability:', error);
+                });
+            },
 
             updateProdAvail() {
-                fetch("https://backend-mdx.onrender.com/collections/Lessons")
+                fetch('https://backend-mdx.onrender.com/collections/Lessons')
                     .then(response => response.json())
                     .then(data => {
                         data.forEach(updatedLesson => {
-                            const product = this.products.find(p => p.id === updatedLesson.productId);
+                            const product = this.products.find(p => p.id === updatedLesson.id);
                             if (product) {
                                 product.availability = updatedLesson.availability;
                             }
@@ -200,6 +197,7 @@
                         console.error('Error fetching updated availability:', error);
                     });
             },
+
             
 
             sortToggle() {
