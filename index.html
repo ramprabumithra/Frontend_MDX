@@ -164,12 +164,11 @@
             },
 
             prodAvailServer(productId, updatedAvailability) {
-                fetch('https://backend-mdx.onrender.com/collections/Lessons', {
+                fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, { // Pass ObjectId in URL
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        id: productId,
-                        availability: updatedAvailability
+                        availability: updatedAvailability // Only send updated availability
                     })
                 })
                 .then(response => response.json())
