@@ -90,7 +90,7 @@
     </div>
 
     <script>
-    new Vue({
+new Vue({
     el: '#app',
     data: {
         school: {
@@ -104,7 +104,6 @@
         showContact: false,
         showSort: false,
         searchQuery: '',
-        filteredProds: [],
         sortOrder: '',
         products: [
             { id: 1000, title: 'Maths', location: 'London', availability: 5, price: 8, img: 'assets/Math-Symbol.png', rating: 3 },
@@ -117,11 +116,12 @@
             { id: 1007, title: 'Music', location: 'London', availability: 5, price: 32, img: 'assets/Music-Symbol.png', rating: 2 },
             { id: 1008, title: 'French', location: 'Mauritius', availability: 5, price: 16, img: 'assets/French-Symbol.png', rating: 4 },
             { id: 1009, title: 'Spanish', location: 'Dubai', availability: 5, price: 16, img: 'assets/Spanish-Symbol.png', rating: 5 }
-        ]
+        ],
+        filteredProds: []  // Start with an empty filtered list
     },
     computed: {
         filterAndSort() {
-            let filteredProds = this.filteredProds;
+            let filteredProds = this.filteredProds.length > 0 ? this.filteredProds : this.products;
 
             if (this.sortOrder === 'price-asc') {
                 filteredProds.sort((a, b) => a.price - b.price);
@@ -143,7 +143,7 @@
     methods: {
         fetchSearchResults() {
             if (this.searchQuery.trim() === '') {
-                this.filteredProds = [];  // Reset if search query is empty
+                this.filteredProds = [];  // Reset if search query is empty, show all products
                 return;
             }
 
@@ -154,6 +154,7 @@
                 })
                 .catch(error => {
                     console.error('Error fetching search results:', error);
+                    this.filteredProds = [];  // If there's an error, fall back to showing all products
                 });
         },
         addToCart(product) {
@@ -215,14 +216,16 @@
         },
 
         searchLessons() {
-            this.fetchSearchResults();
+            this.fetchSearchResults();  // Call the search when user types
         }
     },
     mounted() {
+        this.filteredProds = this.products;  // Initially, show all products
         this.updateProdAvail();
     }
 });
 </script>
+
 </body>
 </html>
     
