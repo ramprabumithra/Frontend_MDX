@@ -159,9 +159,9 @@
                     }
                     
                     if (product._id) {
-                        this.prodAvailServer(product._id, product.availability);
+                        this.prodAvailServer(product.id, product.availability);
                     } else {
-                        console.error('Error: Product _id is missing');
+                        console.error('Error: Product id is missing');
                     }
                     
                     localStorage.setItem('cart', JSON.stringify(this.cart));
@@ -175,7 +175,7 @@
                 }
         
                 fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, {
-                    method: 'PATCH',
+                    method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         availability: updatedAvailability
@@ -195,7 +195,7 @@
                     .then(response => response.json())
                     .then(data => {
                         data.forEach(updatedLesson => {
-                            const product = this.products.find(p => p._id === updatedLesson._id);
+                            const product = this.products.find(p => p.id === updatedLesson.id);
                             if (product) {
                                 product.availability = updatedLesson.availability;
                             }
