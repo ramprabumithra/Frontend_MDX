@@ -142,7 +142,6 @@
                 return filteredProds;
             },
 
-
             cartItems() {
                 return this.cart.reduce((total, item) => total + item.quantity, 0);
             }
@@ -157,23 +156,18 @@
                     } else {
                         this.cart.push({ ...product, quantity: 1 });
                     }
-                    
-                    if (product._id) {
-                        this.prodAvailServer(product.id, product.availability);
-                    } else {
-                        console.error('Error: Product id is missing');
-                    }
-                    
+
+                    this.prodAvailServer(product.id, product.availability);
                     localStorage.setItem('cart', JSON.stringify(this.cart));
                 }
             },
-        
+
             prodAvailServer(productId, updatedAvailability) {
                 if (!productId) {
                     console.error('Error: Invalid product ID');
                     return;
                 }
-        
+
                 fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -189,7 +183,7 @@
                     console.error('Error updating product availability:', error);
                 });
             },
-        
+
             updateProdAvail() {
                 fetch('https://backend-mdx.onrender.com/collections/Lessons')
                     .then(response => response.json())
@@ -206,13 +200,8 @@
                         console.error('Error fetching updated availability:', error);
                     });
             },
-        }
-
-
-            
 
             sortToggle() {
-                
                 this.showSort = !this.showSort;
             }
         },
@@ -220,7 +209,6 @@
             this.updateProdAvail();
         }
     });
-
     </script>
 </body>
 </html>
