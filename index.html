@@ -164,7 +164,8 @@
             },
 
             prodAvailServer(productId, updatedAvailability) {
-                fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, { // Pass ObjectId in URL
+                const objectId = product._id;
+                fetch(`https://backend-mdx.onrender.com/collections/Lessons/${objectId}`, { // Pass ObjectId in URL
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
