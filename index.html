@@ -121,42 +121,31 @@ new Vue({
     },
     computed: {
         filterAndSort() {
-            let filteredProds = this.filteredProds.length > 0 ? this.filteredProds : this.products;
+                let filteredProds = this.products.filter(product =>
+                    product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                    product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                    product.price.toString().includes(this.searchQuery) ||
+                    product.availability.toString().includes(this.searchQuery)
+                );
 
-            if (this.sortOrder === 'price-asc') {
-                filteredProds.sort((a, b) => a.price - b.price);
-            } else if (this.sortOrder === 'price-desc') {
-                filteredProds.sort((a, b) => b.price - a.price);
-            } else if (this.sortOrder === 'availability-asc') {
-                filteredProds.sort((a, b) => a.availability - b.availability);
-            } else if (this.sortOrder === 'availability-desc') {
-                filteredProds.sort((a, b) => b.availability - a.availability);
-            }
+                if (this.sortOrder === 'price-asc') {
+                    filteredProds.sort((a, b) => a.price - b.price);
+                } else if (this.sortOrder === 'price-desc') {
+                    filteredProds.sort((a, b) => b.price - a.price);
+                } else if (this.sortOrder === 'availability-asc') {
+                    filteredProds.sort((a, b) => a.availability - b.availability);
+                } else if (this.sortOrder === 'availability-desc') {
+                    filteredProds.sort((a, b) => b.availability - a.availability);
+                }
 
-            return filteredProds;
-        },
+                return filteredProds;
+            },
 
         cartItems() {
             return this.cart.reduce((total, item) => total + item.quantity, 0);
         }
     },
     methods: {
-        fetchSearchResults() {
-            if (this.searchQuery.trim() === '') {
-                this.filteredProds = [];  // Reset if search query is empty, show all products
-                return;
-            }
-
-            fetch(`https://backend-mdx.onrender.com/search?query=${encodeURIComponent(this.searchQuery)}`)
-                .then(response => response.json())
-                .then(data => {
-                    this.filteredProds = data;  // Update filtered products with backend data
-                })
-                .catch(error => {
-                    console.error('Error fetching search results:', error);
-                    this.filteredProds = [];  // If there's an error, fall back to showing all products
-                });
-        },
         addToCart(product) {
             if (product.availability > 0) {
                 product.availability -= 1;
