@@ -158,18 +158,27 @@
                         this.cart.push({ ...product, quantity: 1 });
                     }
                     
-                    this.prodAvailServer(product.id, product.availability);
+                    if (product._id) {
+                        this.prodAvailServer(product._id, product.availability);
+                    } else {
+                        console.error('Error: Product _id is missing');
+                    }
+                    
                     localStorage.setItem('cart', JSON.stringify(this.cart));
                 }
             },
-
-            prodAvailServer(product, updatedAvailability) {
-                const objectId = product._id;
-                fetch(`https://backend-mdx.onrender.com/collections/Lessons/${objectId}`, { // Pass ObjectId in URL
+        
+            prodAvailServer(productId, updatedAvailability) {
+                if (!productId) {
+                    console.error('Error: Invalid product ID');
+                    return;
+                }
+        
+                fetch(`https://backend-mdx.onrender.com/collections/Lessons/${productId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        availability: updatedAvailability // Only send updated availability
+                        availability: updatedAvailability
                     })
                 })
                 .then(response => response.json())
@@ -180,13 +189,13 @@
                     console.error('Error updating product availability:', error);
                 });
             },
-
+        
             updateProdAvail() {
                 fetch('https://backend-mdx.onrender.com/collections/Lessons')
                     .then(response => response.json())
                     .then(data => {
                         data.forEach(updatedLesson => {
-                            const product = this.products.find(p => p.id === updatedLesson.id);
+                            const product = this.products.find(p => p._id === updatedLesson._id);
                             if (product) {
                                 product.availability = updatedLesson.availability;
                             }
@@ -197,6 +206,8 @@
                         console.error('Error fetching updated availability:', error);
                     });
             },
+        }
+
 
             
 
