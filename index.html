@@ -163,7 +163,7 @@
                 }
             },
 
-            prodAvailServer(productId, updatedAvailability) {
+            prodAvailServer(product, updatedAvailability) {
                 const objectId = product._id;
                 fetch(`https://backend-mdx.onrender.com/collections/Lessons/${objectId}`, { // Pass ObjectId in URL
                     method: 'PATCH',
