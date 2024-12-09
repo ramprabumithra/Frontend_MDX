@@ -109,6 +109,7 @@
             },
             computed: {
                 filterAndSort() {
+                    console.log('Filtering and sorting products:', this.products);
                     let filteredProds = this.products.filter(product =>
                         product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                         product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
@@ -125,6 +126,8 @@
                     } else if (this.sortOrder === 'availability-desc') {
                         filteredProds.sort((a, b) => b.availability - a.availability);
                     }
+                    console.log('Filtered and sorted products:', filteredProds);  // Log the filtered and sorted products
+        
 
                     return filteredProds;
                 },
