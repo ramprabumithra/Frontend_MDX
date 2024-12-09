@@ -242,27 +242,6 @@
                     }
                 },
         
-                placeOrder() {
-                    const order = {
-                        cartItems: this.cart,
-                        totalAmount: this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-                        orderDate: new Date().toISOString(),
-                    };
-        
-                    fetch('https://backend-mdx.onrender.com/collections/Orders', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(order)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Order placed successfully:', data);
-                    })
-                    .catch(error => {
-                        console.error('Error placing order:', error);
-                    });
-                },
-            },
             mounted() {
                 this.fetchLessons(); 
                 this.updateProdAvail();
