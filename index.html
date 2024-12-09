@@ -161,29 +161,29 @@ new Vue({
     },
 
     prodAvailServer(lessonTitle, updatedAvailability) {
-        if (!lessonTitle) {
-            console.error('Error: Invalid lesson title');
-            return;
-        }
+            if (!lessonTitle) {
+                console.error('Error: Invalid lesson title');
+                return;
+            }
 
-        fetch(`https://backend-mdx.onrender.com/collections/Lessons/${lessonTitle}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                availability: updatedAvailability
+            fetch(`https://backend-mdx.onrender.com/collections/Lessons/${lessonTitle}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    availability: updatedAvailability
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Lesson availability updated successfully:', data);
-        })
-        .catch(error => {
-            console.error('Error updating lesson availability:', error);
-        });
-    },
+            .then(response => response.json())
+            .then(data => {
+                console.log('Lesson availability updated successfully:', data);
+            })
+            .catch(error => {
+                console.error('Error updating lesson availability:', error);
+            });
+        },
 
     updateProdAvail() {
-        fetch('https://backend-mdx.onrender.com/collections/Lessons')
+        fetch(`https://backend-mdx.onrender.com/collections/Lessons`)
             .then(response => response.json())
             .then(data => {
                 data.forEach(updatedLesson => {
@@ -198,7 +198,7 @@ new Vue({
                 console.error('Error fetching updated availability:', error);
             });
     },
-
+        
     sortToggle() {
         this.showSort = !this.showSort;
     },
