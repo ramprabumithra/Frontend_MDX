@@ -36,7 +36,6 @@
                         CHECKOUT <i class="fa fa-cart-shopping"></i> <span class="cart-count">{{ cartItems }}</span>
                     </a>
                 </button>
-                
             </nav>
 
             <div v-if="showSchoolInfo" class="info-box" @mouseover="showSchoolInfo = true" @mouseleave="showSchoolInfo = false">
@@ -206,28 +205,12 @@ new Vue({
 
     searchLessons() {
         console.log('Search method triggered:', this.searchQuery); 
-    
-        let filteredResults = this.products.filter(product => {
-            const query = this.searchQuery.toLowerCase();
-    
-            // Check if the query matches any of the fields: title, location, price, or availability
-            return (
-                product.title.toLowerCase().includes(query) || 
-                product.location.toLowerCase().includes(query) ||
-                product.price.toString().includes(query) ||
-                product.availability.toString().includes(query)
-            );
-        });
-    
-        console.log('Filtered search results:', filteredResults);  
-        this.filteredProds = filteredResults;  
     },
 
-
-mounted() {
-    this.filteredProds = this.products; 
-    this.updateProdAvail();
-}
+    mounted() {
+        this.filteredProds = this.products; 
+        this.updateProdAvail();
+    }
 });
 </script>
 
