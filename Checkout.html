@@ -346,6 +346,36 @@
             },
 
             submitForm() {
+                if (!this.order.firstName || /\d/.test(this.order.firstName)) {
+                    alert("First name cannot contain numbers and must be filled out.");
+                    return;
+                }
+            
+                if (!this.order.lastName || /\d/.test(this.order.lastName)) {
+                    alert("Last name cannot contain numbers and must be filled out.");
+                    return;
+                }
+            
+                if (!this.order.address || /\d/.test(this.order.address)) {
+                    alert("Address cannot contain only numbers.");
+                    return;
+                }
+            
+                if (!this.order.zip || !/^\d{5,6}$/.test(this.order.zip)) {
+                    alert("Postal code must be a valid number with 5 or 6 digits.");
+                    return;
+                }
+            
+                if (!this.order.city) {
+                    alert("Please select a city.");
+                    return;
+                }
+            
+                if (!this.order.method) {
+                    alert("Please select a delivery method.");
+                    return;
+                }
+            
                 const orderData = {
                     firstName: this.order.firstName,
                     lastName: this.order.lastName,
@@ -356,7 +386,7 @@
                     method: this.order.method,
                     lessons: this.order.lessons,
                 };
-
+            
                 fetch('https://backend-mdx.onrender.com/collections/Orders', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -372,11 +402,12 @@
                     console.error('Error placing order:', error);
                     alert('There was an error placing your order. Please try again.');
                 });
-            }
-        },
+            },
+
         mounted() {
             this.loadCart();
             this.loadDetails();
+        }
         }
     });
     </script>
