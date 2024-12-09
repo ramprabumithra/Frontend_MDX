@@ -190,10 +190,9 @@ new Vue({
         },
 
         fetchLessons() {
-            fetch('https://backend-mdx.onrender.com/collections/Lessons')  // Ensure to use the Render backend URL
+            fetch('https://backend-mdx.onrender.com/collections/Lessons')
             .then(response => response.json())
             .then(data => {
-                console.log(data);  // Log the fetched data
                 if (Array.isArray(data)) {
                     this.products = data.map(product => ({
                         id: product._id,  
@@ -218,51 +217,52 @@ new Vue({
         },
 
         searchLessons() {
-    console.log('Search method triggered:', this.searchQuery); 
-    
-    const query = this.searchQuery.trim();
-    if (query) {
-        // Try converting the query to a number to handle numeric searches
-        const numericQuery = !isNaN(query) ? parseFloat(query) : null;
+            console.log('Search method triggered:', this.searchQuery); 
 
-        fetch(`https://backend-mdx.onrender.com/search?query=${query}&collectionName=Lessons`)
-            .then(response => response.json())
-            .then(data => {
-                console.log('Search results:', data);
-                // Map the response to the expected format for Vue to use
-                this.products = data.map(product => ({
-                    id: product._id,
-                    title: product.lessonTitle,
-                    location: product.location,
-                    price: product.price,
-                    availability: product.availability,
-                    img: product.img || 'default.png',
-                    rating: product.rating || 5
-                }));
+            const query = this.searchQuery.trim().toLowerCase();
+            if (query) {
+                // Check if the query is numeric
+                const numericQuery = !isNaN(query) ? parseFloat(query) : null;
 
-                // Now handle numeric search (price and availability)
-                if (numericQuery !== null) {
-                    // Filter products based on numeric query
-                    this.products = this.products.filter(product => 
-                        product.price === numericQuery || 
-                        product.availability === numericQuery
-                    );
-                }
-            })
-            .catch(error => {
-                console.error('Error searching lessons:', error);
-            });
-    } else {
-        this.fetchLessons();  // Reset to all lessons if search is empty
-    }
-},
+                // Update the filteredProds array based on the search query
+                fetch(`https://backend-mdx.onrender.com/search?query=${query}&collectionName=Lessons`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Search results:', data);
+
+                        if (numericQuery !== null) {
+                            // Filter products based on numeric query (price or availability)
+                            this.products = data.filter(product => 
+                                product.price === numericQuery || 
+                                product.availability === numericQuery
+                            );
+                        } else {
+                            // Use the data from the API (handling non-numeric searches)
+                            this.products = data.map(product => ({
+                                id: product._id,
+                                title: product.lessonTitle,
+                                location: product.location,
+                                price: product.price,
+                                availability: product.availability,
+                                img: product.img || 'default.png',
+                                rating: product.rating || 5
+                            }));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error searching lessons:', error);
+                    });
+            } else {
+                this.fetchLessons();  // Reset to all lessons if search is empty
+            }
+        }
+    },
 
     mounted() {
         this.fetchLessons(); 
         this.updateProdAvail();
-    },
+    }
 });
-
 </script>
 </body>
 </html>
