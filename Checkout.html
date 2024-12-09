@@ -294,11 +294,35 @@
             localStorage.removeItem('order');
         },
         submitForm() {
-            alert('Order placed successfully!');
-            this.clearCart();
-            this.clearDetails();
-        }
-    },
+            
+            const orderData = {
+                firstName: this.order.firstName,
+                lastName: this.order.lastName,
+                address: this.order.address,
+                city: this.order.city,
+                zip: this.order.zip,
+                gift: this.order.gift,
+                method: this.order.method,
+                lessons: this.order.lessons,
+            };
+        
+            fetch('https://backend-mdx.onrender.com/collections/Orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Order placed successfully!');
+                console.log('Order placed:', data);
+                this.clearCart();
+                this.clearDetails();
+            })
+            .catch(error => {
+                console.error('Error placing order:', error);
+                alert('There was an error placing your order. Please try again.');
+            });
+        },
     mounted() {
         this.loadCart();
         this.loadDetails();
