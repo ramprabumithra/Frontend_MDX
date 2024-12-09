@@ -173,7 +173,7 @@ new Vue({
         },
 
         updateProdAvail() {
-            fetch('https://backend-mdx.onrender.com/collections/Lessons')
+            fetch(`https://backend-mdx.onrender.com/collections/Lessons`)
                 .then(response => response.json())
                 .then(data => {
                     data.forEach(updatedLesson => {
