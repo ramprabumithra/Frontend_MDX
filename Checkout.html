@@ -261,6 +261,28 @@
             }
         },
         methods: {
+            validateInputs(field) {
+            const containsNumber = (text) => /\d/.test(text);
+
+            if (field === 'firstName' || field === 'lastName' || field === 'address') {
+                if (containsNumber(this.order[field])) {
+                    alert(`${field.charAt(0).toUpperCase() + field.slice(1)} should not contain numbers.`);
+                    this.order[field] = '';
+                    return false;
+                }
+            }
+
+            if (field === 'zip' && this.order.zip !== '') {
+                if (!/^\d+$/.test(this.order.zip) || this.order.zip.length < 5 || this.order.zip.length > 6) {
+                    alert('Zip/Postal Code should contain only numbers.');
+                    this.order.zip = '';
+                    return false;
+                }
+            }
+
+            return true;
+        },
+            
             reduceQuantity(item) {
                 if (item.quantity > 1) {
                     item.quantity--;
@@ -325,9 +347,11 @@
                 Object.assign(this.order, orderData);
             },
 
-            saveDetails(key) {
+            saveDetails(field) {
+            if (this.validateInputs(field)) {
                 localStorage.setItem('order', JSON.stringify(this.order));
-            },
+            }
+        },
 
             clearCart() {
                 this.cart = [];
