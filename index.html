@@ -157,6 +157,7 @@ new Vue({
 
             this.prodAvailServer(product.title, product.availability);
             localStorage.setItem('cart', JSON.stringify(this.cart));
+            localStorage.setItem('products', JSON.stringify(this.products));
         }
     },
 
@@ -209,9 +210,19 @@ new Vue({
 
     mounted() {
         this.filteredProds = this.products; 
-        this.updateProdAvail();
+        const savedCart = JSON.parse(localStorage.getItem('cart'));
+            if (savedCart) {
+                this.cart = savedCart;
+            }
+
+            const savedProducts = JSON.parse(localStorage.getItem('products'));
+            if (savedProducts) {
+                this.products = savedProducts;
+            } else {
+                this.updateProdAvail();
+            }
+        }
     }
-}
 });
 </script>
 
