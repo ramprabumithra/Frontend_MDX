@@ -149,7 +149,7 @@
 
                         this.prodAvailServer(product.title, product.availability);
 
-                        
+                        // Update localStorage with the updated cart and product availability
                         localStorage.setItem('cart', JSON.stringify(this.cart));
 
                         const updatedProducts = this.products.map(p =>
