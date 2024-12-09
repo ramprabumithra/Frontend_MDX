@@ -109,12 +109,18 @@
             },
             computed: {
                 filterAndSort() {
-                    let filteredProds = this.products.filter(product =>
-                        product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                        product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                        product.price.toString().includes(this.searchQuery) ||
-                        product.availability.toString().includes(this.searchQuery)
-                    );
+                    let filteredProds = this.products.filter(product => {
+                        const title = product.title || '';      // Fallback to an empty string if title is undefined
+                        const location = product.location || ''; // Fallback to an empty string if location is undefined
+                        const price = product.price || '';      // Fallback to an empty string if price is undefined
+                        const availability = product.availability || ''; // Fallback to an empty string if availability is undefined
+                    
+                        return title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                               location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                               price.toString().includes(this.searchQuery) ||
+                               availability.toString().includes(this.searchQuery);
+                    });
+
 
                     if (this.sortOrder === 'price-asc') {
                         filteredProds.sort((a, b) => a.price - b.price);
