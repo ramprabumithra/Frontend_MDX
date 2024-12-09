@@ -69,7 +69,7 @@
 
             <section id="product-section" v-if="!showCheckout">
                 <div v-for="product in filterAndSort" :key="product.id" class="product-card">
-                    <img :src="product.img" class="product-img" alt="Product Image">
+                    <img :src="`/assets/${product.img}`" class="product-img" alt="Product Image">
                     <h2>{{ product.title }}</h2>
                     <p>{{ product.location }}</p>
                     <p v-if="product.availability > 0">{{ product.availability }} seats available</p>
@@ -104,7 +104,7 @@ new Vue({
         showSort: false,
         searchQuery: '',
         sortOrder: '',
-        products: [], // Initially empty, will be populated via fetch
+        products: [],
         filteredProds: []  
     },
     computed: {
@@ -197,7 +197,11 @@ new Vue({
         },
 
         mounted() {
-            // Fetching product data from external source (API)
+            this.fetchLessons(); 
+            this.updateProdAvail();
+        },
+
+        fetchLessons() {
             fetch('https://backend-mdx.onrender.com/collections/Lessons')  // Replace with your API endpoint
                 .then(response => response.json())
                 .then(data => {
@@ -207,7 +211,7 @@ new Vue({
                         location: item.location,
                         availability: item.availability,
                         price: item.price,
-                        img: item.image,  // Make sure the API provides image URL field
+                        img: item.img ? item.img : 'default-image.png', // Default image if not available
                         rating: item.rating
                     }));
                     this.filteredProds = this.products;
@@ -215,12 +219,9 @@ new Vue({
                 .catch(error => {
                     console.error('Error fetching product data:', error);
                 });
-
-            this.updateProdAvail();
         }
     }
 });
-</script>
-
+    </script>
 </body>
 </html>
