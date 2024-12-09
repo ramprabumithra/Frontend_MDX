@@ -167,7 +167,7 @@ new Vue({
                 return;
             }
 
-            fetch('https://backend-mdx.onrender.com/collections/Lessons/${lessonTitle}', {
+            fetch(`https://backend-mdx.onrender.com/collections/Lessons/${lessonTitle}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -184,7 +184,7 @@ new Vue({
         },
 
         updateProdAvail() {
-            fetch('https://backend-mdx.onrender.com/collections/Lessons')
+            fetch(`https://backend-mdx.onrender.com/collections/Lessons`)
                 .then(response => response.json())
                 .then(data => {
                     data.forEach(updatedLesson => {
