@@ -141,7 +141,6 @@
     <div id="app">
         <h2>Checkout</h2>
         
-        
         <div v-if="cart.length > 0">
             <h3>Your Cart</h3>
             <div v-for="item in cart" :key="item.id" class="cart-item">
@@ -163,7 +162,6 @@
             <p>Your cart is empty.</p>
         </div>
 
-        
         <p>
             <strong>First Name:</strong>
             <input v-model="order.firstName" type="text" @input="saveDetails('firstName')" />
@@ -235,8 +233,8 @@
                    this.order.method;
         },
         cartTotal() {
-        return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-    }
+            return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
     },
     methods: {
         validateInputs(field) {
@@ -294,9 +292,28 @@
             localStorage.removeItem('order');
         },
         submitForm() {
-            alert('Order placed successfully!');
-            this.clearCart();
-            this.clearDetails();
+            const orderData = {
+                order: this.order,
+                cart: this.cart
+            };
+
+            fetch('https://backend-mdx.onrender.com/placeOrder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Order placed successfully!');
+                this.clearCart();
+                this.clearDetails();
+            })
+            .catch(error => {
+                console.error('Error placing order:', error);
+                alert('An error occurred while placing the order.');
+            });
         }
     },
     mounted() {
