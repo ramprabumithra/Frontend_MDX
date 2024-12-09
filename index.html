@@ -174,34 +174,33 @@
                     });
                 },
 
-                fetchLessons() {
-                    fetch('https://backend-mdx.onrender.com/collections/Lessons') 
-                        .then(response => response.json())
-                        .then(data => {
-                            this.products = data.map(lesson => ({
-                                ...lesson,
-                                availability: lesson.availability || 5  // Default availability if not present
-                            }));
-                            localStorage.setItem('products', JSON.stringify(this.products));
-                        })
-                        .catch(error => {
-                            console.error('Error fetching lessons:', error);
-                        });
-                },
+            fetchLessons() {
+                fetch('https://backend-mdx.onrender.com/collections/Lessons')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Fetched lessons:', data);  // Check the data returned from the API
+                        this.products = data;  // Store fetched lessons in products
+                    })
+                    .catch(error => {
+                        console.error('Error fetching lessons:', error);
+                    });
+            },
 
-                mounted() {
-                    const savedCart = JSON.parse(localStorage.getItem('cart'));
-                    if (savedCart) {
-                        this.cart = savedCart;
-                    }
 
-                    const savedProducts = JSON.parse(localStorage.getItem('products'));
-                    if (savedProducts) {
-                        this.products = savedProducts;
-                    } else {
-                        this.fetchLessons();  
-                    }
-                },
+            mounted() {
+                this.fetchLessons(); 
+                const savedCart = JSON.parse(localStorage.getItem('cart'));
+                if (savedCart) {
+                    this.cart = savedCart;
+                }
+            
+                const savedProducts = JSON.parse(localStorage.getItem('products'));
+                if (savedProducts) {
+                    this.products = savedProducts;
+                } else {
+                    this.updateProdAvail();
+                }
+            },
 
                 sortToggle() {
                     this.showSort = !this.showSort;
