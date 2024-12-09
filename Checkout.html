@@ -171,7 +171,7 @@
                 <div class="item-summary">
                     <p><strong>Total: ${{ item.price * item.quantity }}</strong></p>
                     <div>
-                        <button @click="increaseQuantity(item)" :disabled="item.availability <= 0">
+                        <button class="reduce-btn" @click="increaseQuantity(item)" :disabled="item.availability <= 0">
                         +
                     </button>
                         <button class="reduce-btn" @click="reduceQuantity(item)">-</button>
@@ -272,11 +272,13 @@
             },
             
             increaseQuantity(item) {
-                if (item.quantity < item.availability) {
-                    item.quantity += 1;
-                    item.availability -= 1;
-                    this.updateLocalStorage();
+                if (item.quantity > 1) {
+                    item.quantity++;
+                } else {
+                    this.addItem(item);
                 }
+
+                this.updateCartInLocalStorage();
             },
 
             removeItem(item) {
@@ -286,6 +288,16 @@
                 }
 
                 this.updateCartInLocalStorage();
+            },
+
+            addItem(item) {
+                const index = this.cart.findIndex(cartItem => cartItem.id === item.id);
+                if (index === -1) {  
+                    this.cart.push({ ...item, quantity: 1 });  
+                } else {
+                    this.cart[index].quantity += 1; 
+                }
+                this.updateCartInLocalStorage(); 
             },
 
             updateCartInLocalStorage() {
