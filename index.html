@@ -107,16 +107,22 @@
             products: [],
         },
         computed: {
+
             filterAndSort() {
-                // Ensure products is loaded
                 if (!this.products || this.products.length === 0) return [];
         
-                let filteredProds = this.products.filter(product =>
-                    product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    product.price.toString().includes(this.searchQuery) ||
-                    product.availability.toString().includes(this.searchQuery)
-                );
+                let filteredProds = this.products.filter(product => {
+                    // Check for undefined or null values before calling toLowerCase()
+                    const title = product.title ? product.title.toLowerCase() : '';
+                    const location = product.location ? product.location.toLowerCase() : '';
+                    const price = product.price ? product.price.toString() : '';
+                    const availability = product.availability ? product.availability.toString() : '';
+        
+                    return title.includes(this.searchQuery.toLowerCase()) ||
+                        location.includes(this.searchQuery.toLowerCase()) ||
+                        price.includes(this.searchQuery) ||
+                        availability.includes(this.searchQuery);
+                });
         
                 if (this.sortOrder === 'price-asc') {
                     filteredProds.sort((a, b) => a.price - b.price);
