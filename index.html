@@ -36,7 +36,6 @@
                         CHECKOUT <i class="fa fa-cart-shopping"></i> <span class="cart-count">{{ cartItems }}</span>
                     </a>
                 </button>
-                
             </nav>
 
             <div v-if="showSchoolInfo" class="info-box" @mouseover="showSchoolInfo = true" @mouseleave="showSchoolInfo = false">
@@ -68,9 +67,9 @@
                 </div>
             </section>
 
-            <section id="product-section" v-if="!showCheckout">
+            <section id="product-section" v-if="filterAndSort.length > 0">
                 <div v-for="product in filterAndSort" :key="product.id" class="product-card">
-                    <img :src="product.img" class="product-img" alt="Product Image">
+                    <img :src="`/assets/${product.img}`" class="product-img" alt="Product Image">
                     <h2>{{ product.title }}</h2>
                     <p>{{ product.location }}</p>
                     <p v-if="product.availability > 0">{{ product.availability }} seats available</p>
@@ -86,6 +85,7 @@
                     </div>
                 </div>
             </section>
+            <p v-else>No products available</p>
         </main>
     </div>
 
@@ -105,41 +105,30 @@ new Vue({
         showSort: false,
         searchQuery: '',
         sortOrder: '',
-        products: [
-            { id: 1000, title: 'Maths', location: 'London', availability: 5, price: 8, img: 'assets/Math-Symbol.png', rating: 3 },
-            { id: 1001, title: 'English', location: 'Dubai', availability: 5, price: 16, img: 'assets/English-Symbol.png', rating: 4 },
-            { id: 1002, title: 'Science', location: 'Mauritius', availability: 5, price: 32, img: 'assets/Science-Symbol.png', rating: 5 },
-            { id: 1003, title: 'History', location: 'London', availability: 5, price: 64, img: 'assets/History-Symbol.png', rating: 4 },
-            { id: 1004, title: 'Computer', location: 'Dubai', availability: 5, price: 128, img: 'assets/Computer-Symbol.png', rating: 5 },
-            { id: 1005, title: 'Geography', location: 'Mauritius', availability: 5, price: 64, img: 'assets/Geography-Symbol.png', rating: 3 },
-            { id: 1006, title: 'Sports', location: 'Dubai', availability: 5, price: 128, img: 'assets/Sports-Symbol.png', rating: 4 },
-            { id: 1007, title: 'Music', location: 'London', availability: 5, price: 32, img: 'assets/Music-Symbol.png', rating: 2 },
-            { id: 1008, title: 'French', location: 'Mauritius', availability: 5, price: 16, img: 'assets/French-Symbol.png', rating: 4 },
-            { id: 1009, title: 'Spanish', location: 'Dubai', availability: 5, price: 16, img: 'assets/Spanish-Symbol.png', rating: 5 }
-        ],
+        products: [],
         filteredProds: []  
     },
     computed: {
         filterAndSort() {
-                let filteredProds = this.products.filter(product =>
-                    product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    product.price.toString().includes(this.searchQuery) ||
-                    product.availability.toString().includes(this.searchQuery)
-                );
+            let filteredProds = this.products.filter(product =>
+                product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                product.price.toString().includes(this.searchQuery) ||
+                product.availability.toString().includes(this.searchQuery)
+            );
 
-                if (this.sortOrder === 'price-asc') {
-                    filteredProds.sort((a, b) => a.price - b.price);
-                } else if (this.sortOrder === 'price-desc') {
-                    filteredProds.sort((a, b) => b.price - a.price);
-                } else if (this.sortOrder === 'availability-asc') {
-                    filteredProds.sort((a, b) => a.availability - b.availability);
-                } else if (this.sortOrder === 'availability-desc') {
-                    filteredProds.sort((a, b) => b.availability - a.availability);
-                }
+            if (this.sortOrder === 'price-asc') {
+                filteredProds.sort((a, b) => a.price - b.price);
+            } else if (this.sortOrder === 'price-desc') {
+                filteredProds.sort((a, b) => b.price - a.price);
+            } else if (this.sortOrder === 'availability-asc') {
+                filteredProds.sort((a, b) => a.availability - b.availability);
+            } else if (this.sortOrder === 'availability-desc') {
+                filteredProds.sort((a, b) => b.availability - a.availability);
+            }
 
-                return filteredProds;
-            },
+            return filteredProds;
+        },
 
         cartItems() {
             return this.cart.reduce((total, item) => total + item.quantity, 0);
@@ -200,37 +189,65 @@ new Vue({
                 });
         },
 
-    sortToggle() {
-        this.showSort = !this.showSort;
+        fetchLessons() {
+            fetch('https://backend-mdx.onrender.com/collections/Lessons')  // Ensure to use the Render backend URL
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);  // Log the fetched data
+                if (Array.isArray(data)) {
+                    this.products = data.map(product => ({
+                        id: product._id,  
+                        title: product.lessonTitle,
+                        location: product.location,
+                        price: product.price,
+                        availability: product.availability,
+                        img: product.img || 'default.png',  // Ensure an image exists
+                        rating: product.rating || 5  
+                    }));
+                } else {
+                    console.error('API response is not in the expected format.');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching lessons:', error);
+            });
+        },
+
+        sortToggle() {
+            this.showSort = !this.showSort;
+        },
+
+        searchLessons() {
+            console.log('Search method triggered:', this.searchQuery); 
+            const query = this.searchQuery;
+            if (query) {
+                fetch(`https://backend-mdx.onrender.com/search?query=${query}&collectionName=Lessons`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Search results:', data);
+                        this.products = data.map(product => ({
+                            id: product._id,
+                            title: product.lessonTitle,
+                            location: product.location,
+                            price: product.price,
+                            availability: product.availability,
+                            img: product.img || 'default.png',
+                            rating: product.rating || 5
+                        }));
+                    })
+                    .catch(error => {
+                        console.error('Error searching lessons:', error);
+                    });
+            } else {
+                this.fetchLessons();  
+            }
+        },
     },
-
-    searchLessons() {
-        console.log('Search method triggered:', this.searchQuery); 
-    
-        let filteredResults = this.products.filter(product => {
-            const query = this.searchQuery.toLowerCase();
-    
-            // Check if the query matches any of the fields: title, location, price, or availability
-            return (
-                product.title.toLowerCase().includes(query) || 
-                product.location.toLowerCase().includes(query) ||
-                product.price.toString().includes(query) ||
-                product.availability.toString().includes(query)
-            );
-        });
-    
-        console.log('Filtered search results:', filteredResults);  
-        this.filteredProds = filteredResults;  
+    mounted() {
+        this.fetchLessons(); 
+        this.updateProdAvail();
     },
-
-
-mounted() {
-    this.filteredProds = this.products; 
-    this.updateProdAvail();
-}
-    }
 });
 </script>
-
 </body>
 </html>
