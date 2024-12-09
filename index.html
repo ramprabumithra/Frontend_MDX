@@ -107,14 +107,17 @@
             products: [],
         },
         computed: {
-        filterAndSort() {
+            filterAndSort() {
+                // Ensure products is loaded
+                if (!this.products || this.products.length === 0) return [];
+        
                 let filteredProds = this.products.filter(product =>
                     product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                     product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                     product.price.toString().includes(this.searchQuery) ||
                     product.availability.toString().includes(this.searchQuery)
                 );
-
+        
                 if (this.sortOrder === 'price-asc') {
                     filteredProds.sort((a, b) => a.price - b.price);
                 } else if (this.sortOrder === 'price-desc') {
@@ -124,14 +127,15 @@
                 } else if (this.sortOrder === 'availability-desc') {
                     filteredProds.sort((a, b) => b.availability - a.availability);
                 }
-
+        
                 return filteredProds;
             },
-
+        
             cartItems() {
                 return this.cart.reduce((total, item) => total + item.quantity, 0);
             }
         },
+
         methods: {
             addToCart(product) {
                 if (product.availability > 0) {
@@ -170,7 +174,8 @@
           fetch(`https://backend-mdx.onrender.com/collections/Lessons`)
             .then((response) => response.json())
             .then((data) => {
-              this.lessons = data;
+                console.log('Fetched products:', data);
+                this.products = data;
             })
             .catch((error) => {
               console.error("Error fetching lessons:", error);
@@ -205,7 +210,7 @@
         mounted() {
             // Fetch lessons from the backend when the component is mounted
             this.fetchData();
-            this.filteredProds = this.products; 
+            
             // Check if there's any saved cart data in localStorage
             const savedCart = localStorage.getItem('cart');
             if (savedCart) {
