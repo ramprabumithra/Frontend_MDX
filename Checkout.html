@@ -141,6 +141,7 @@
     <div id="app">
         <h2>Checkout</h2>
         
+        
         <div v-if="cart.length > 0">
             <h3>Your Cart</h3>
             <div v-for="item in cart" :key="item.id" class="cart-item">
@@ -162,36 +163,37 @@
             <p>Your cart is empty.</p>
         </div>
 
+        
         <p>
             <strong>First Name:</strong>
-            <input v-model="order.firstName" type="text" @input="saveDetails('firstName')" />
+            <input v-model="order.firstName" type="text" @input="saveDetails" />
         </p>
         <p>
             <strong>Last Name:</strong>
-            <input v-model="order.lastName" type="text" @input="saveDetails('lastName')" />
+            <input v-model="order.lastName" type="text" @input="saveDetails" />
         </p>
         <p>
             <strong>Address:</strong>
-            <input v-model="order.address" type="text" @input="saveDetails('address')" />
+            <input v-model="order.address" type="text" @input="saveDetails" />
         </p>
         <p>
             <strong>City:</strong>
-            <select v-model="order.city" @change="saveDetails('city')">
+            <select v-model="order.city" @change="saveDetails">
                 <option v-for="(city, key) in cities" :value="city">{{ key }}</option>
             </select>
         </p>
         <p>
             <strong>Zip/Postal Code:</strong>
-            <input v-model.number="order.zip" type="number" @input="saveDetails('zip')" />
+            <input v-model.number="order.zip" type="number" @input="saveDetails" />
         </p>
         <p>
-            <input type="checkbox" id="gift" v-model="order.gift" @change="saveDetails('gift')">
+            <input type="checkbox" id="gift" v-model="order.gift" @change="saveDetails">
             <label for="gift">Send as a Gift</label>
         </p>
         <p>
-            <input type="radio" id="home" value="Home" v-model="order.method" @change="saveDetails('method')">
+            <input type="radio" id="home" value="Home" v-model="order.method" @change="saveDetails">
             <label for="home">Home</label>
-            <input type="radio" id="business" value="Business" v-model="order.method" @change="saveDetails('method')">
+            <input type="radio" id="business" value="Business" v-model="order.method" @change="saveDetails">
             <label for="business">Business</label>
         </p>
 
@@ -199,69 +201,69 @@
     </div>
 
     <script>
+    new Vue({
+    el: '#app',
+    data: {
+        cart: [],
+        order: {
+            firstName: '',
+            lastName: '',
+            address: '',
+            city: '',
+            zip: '',
+            gift: false,
+            method: '',
+            lessons: []  
+        },
+        cities: {
+            DXB: 'Dubai',
+            ADB: 'Abu Dhabi',
+            SHJ: 'Sharjah',
+            AJM: 'Ajman',
+            UAQ: 'Umm Al Quwain',
+            RAK: 'Ras Al Khaimah',
+            FUJ: 'Fujairah'
+        }
+    },
+    computed: {
+        completedForm() {
+            // Check if all the fields are filled and valid
+            return this.order.firstName &&
+                   this.order.lastName &&
+                   this.order.address &&
+                   this.order.city &&
+                   this.order.zip &&
+                   this.order.method;
+        },
+        cartTotal() {
+        return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+    },
+    methods: {
+        validateInputs(field) {
+            const containsNumber = (text) => /\d/.test(text);
 
-        new Vue({
-          el: '#app',
-          data: {
-            cart: [],
-            order: {
-              firstName: '',
-              lastName: '',
-              address: '',
-              city: '',
-              zip: '',
-              gift: false,
-              method: '',
-              lessons: []  // Ensure this is an array
-            },
-            cities: {
-              DXB: 'Dubai',
-              ADB: 'Abu Dhabi',
-              SHJ: 'Sharjah',
-              AJM: 'Ajman',
-              UAQ: 'Umm Al Quwain',
-              RAK: 'Ras Al Khaimah',
-              FUJ: 'Fujairah'
-            }
-          },
-          computed: {
-            completedForm() {
-              return this.order.firstName &&
-                     this.order.lastName &&
-                     this.order.address &&
-                     this.order.city &&
-                     this.order.zip &&
-                     this.order.method;
-            },
-            cartTotal() {
-              return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-            }
-          },
-          methods: {
-            validateInputs(field) {
-              const containsNumber = (text) => /\d/.test(text);
-        
-              if (field === 'firstName' || field === 'lastName' || field === 'address') {
+            if (field === 'firstName' || field === 'lastName' || field === 'address') {
                 if (containsNumber(this.order[field])) {
-                  alert(`${field.charAt(0).toUpperCase() + field.slice(1)} should not contain numbers.`);
-                  this.order[field] = '';
-                  return false;
+                    alert(`${field.charAt(0).toUpperCase() + field.slice(1)} should not contain numbers.`);
+                    this.order[field] = ''; // Reset invalid field
+                    return false;
                 }
-              }
-        
-              if (field === 'zip' && this.order.zip !== '') {
+            }
+
+            if (field === 'zip') {
                 if (!/^\d+$/.test(this.order.zip)) {
-                  alert('Zip/Postal Code should contain only numbers.');
-                  this.order.zip = '';
-                  return false;
+                    alert('Zip/Postal Code should contain only numbers.');
+                    this.order.zip = ''; // Reset invalid zip
+                    return false;
                 }
-              }
-        
-              return true;
-            },
-        
-        saveDetails(field) {
-            if (this.validateInputs(field)) {
+            }
+
+            return true;
+        },
+
+        saveDetails() {
+            if (this.validateInputs()) {
                 localStorage.setItem('order', JSON.stringify(this.order));
             }
         },
@@ -293,9 +295,31 @@
             localStorage.removeItem('order');
         },
         submitForm() {
-            alert('Order placed successfully!');
-            this.clearCart();
-            this.clearDetails();
+            const orderData = {
+                ...this.order,
+                lessons: this.cart.map(item => ({
+                    lessonTitle: item.title,
+                    price: item.price,
+                    quantity: item.quantity
+                }))
+            };
+
+            fetch('https://backend-mdx.onrender.com/placeOrder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.clearCart();
+                this.clearDetails();
+                alert('Order placed successfully!');
+            })
+            .catch(error => {
+                alert('Failed to place order.');
+            });
         }
     },
     mounted() {
@@ -303,8 +327,6 @@
         this.loadDetails();
     }
 });
-</script>
-
-
+    </script>
 </body>
 </html>
