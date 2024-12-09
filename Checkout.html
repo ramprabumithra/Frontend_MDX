@@ -260,60 +260,48 @@
               return true;
             },
         
-            saveDetails(field) {
-              if (this.validateInputs(field)) {
+        saveDetails(field) {
+            if (this.validateInputs(field)) {
                 localStorage.setItem('order', JSON.stringify(this.order));
-              }
-            },
-        
-            submitForm() {
-                if (!Array.isArray(this.order.lessons)) {
-                    this.order.lessons = [this.order.lessons]; 
-                }
-        
-              const order = {
-                firstName: this.order.firstName,
-                lastName: this.order.lastName,
-                address: this.order.address,
-                city: this.order.city,
-                zip: this.order.zip,
-                lessons: this.order.lessons,  // Ensure this is an array
-                method: this.order.method,
-                gift: this.order.gift
-              };
-        
-              fetch('https://backend-mdx.onrender.com/placeOrder', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(order),
-              })
-              .then(response => response.json())
-              .then(data => {
-                if (data.msg === 'Order placed successfully') {
-                  alert('Order placed successfully');
-                  this.clearCart();
-                } else {
-                  alert('Error: ' + data.msg);
-                }
-              })
-              .catch(error => {
-                console.error('Error placing order:', error);
-                alert('Error placing order');
-              });
-            },
-        
-            clearCart() {
-              this.cart = [];
-              localStorage.removeItem('cart');
             }
-          },
-        
-          mounted() {
-            this.loadCart();
-            this.loadDetails();
-          }
+        },
+        loadCart() {
+            const cartData = JSON.parse(localStorage.getItem('cart')) || [];
+            this.cart = cartData;
+            this.order.lessons = cartData.map(item => ({
+                lessonTitle: item.title,
+                price: item.price,
+                quantity: item.quantity,
+            }));
+        },
+        loadDetails() {
+            const orderData = JSON.parse(localStorage.getItem('order')) || {};
+            Object.assign(this.order, orderData);
+        },
+        clearCart() {
+            this.cart = [];
+            localStorage.removeItem('cart');
+        },
+        clearDetails() {
+            this.order.firstName = '';
+            this.order.lastName = '';
+            this.order.address = '';
+            this.order.city = '';
+            this.order.zip = '';
+            this.order.gift = false;
+            this.order.method = '';
+            localStorage.removeItem('order');
+        },
+        submitForm() {
+            alert('Order placed successfully!');
+            this.clearCart();
+            this.clearDetails();
+        }
+    },
+    mounted() {
+        this.loadCart();
+        this.loadDetails();
+    }
 });
 </script>
 
