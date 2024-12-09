@@ -135,27 +135,27 @@
                 }
             },
             methods: {
-            addToCart(product) {
-                if (product.availability > 0) {
-                    product.availability -= 1;  
-                    const cartItem = this.cart.find(item => item.id === product.id);
-                    if (cartItem) {
-                        cartItem.quantity += 1;
-                    } else {
-                        this.cart.push({ ...product, quantity: 1 });
+                addToCart(product) {
+                    if (product.availability > 0) {
+                        product.availability -= 1;
+                        const cartItem = this.cart.find(item => item.id === product.id);
+                        if (cartItem) {
+                            cartItem.quantity += 1;
+                        } else {
+                            this.cart.push({ ...product, quantity: 1 });
+                        }
+        
+                        this.prodAvailServer(product.title, product.availability);
+                        localStorage.setItem('cart', JSON.stringify(this.cart));
                     }
-                    
-                    this.prodAvailServer(product.id, product.availability);
-                    localStorage.setItem('cart', JSON.stringify(this.cart));
-                }
-            },
+                },
                 prodAvailServer(lessonTitle, updatedAvailability) {
                     if (!lessonTitle) {
                         console.error('Error: Invalid lesson title');
                         return;
                     }
         
-                    fetch(`https://backend-mdx.onrender.com/collections/Lessons/${lessonTitle}`, {
+                    fetch(https://backend-mdx.onrender.com/collections/Lessons/${lessonTitle}, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -170,9 +170,9 @@
                         console.error('Error updating lesson availability:', error);
                     });
                 },
-
+        
                 updateProdAvail() {
-                    fetch(`https://backend-mdx.onrender.com/collections/Lessons`)
+                    fetch(https://backend-mdx.onrender.com/collections/Lessons)
                         .then(response => response.json())
                         .then(data => {
                             data.forEach(updatedLesson => {
@@ -187,7 +187,7 @@
                             console.error('Error fetching updated availability:', error);
                         });
                 },
-                
+        
                 fetchLessons() {
                     fetch('https://backend-mdx.onrender.com/collections/Lessons')  
                     .then(response => response.json())
@@ -220,7 +220,7 @@
                     console.log('Search method triggered:', this.searchQuery); 
                     const query = this.searchQuery;
                     if (query) {
-                        fetch(`https://backend-mdx.onrender.com/search?query=${query}&collectionName=Lessons`)
+                        fetch(https://backend-mdx.onrender.com/search?query=${query}&collectionName=Lessons)
                             .then(response => response.json())
                             .then(data => {
                                 console.log('Search results:', data);
@@ -241,11 +241,32 @@
                         this.fetchLessons();  
                     }
                 },
-                mounted() {
-                    this.fetchLessons(); 
-                    this.updateProdAvail();
+        
+                placeOrder() {
+                    const order = {
+                        cartItems: this.cart,
+                        totalAmount: this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                        orderDate: new Date().toISOString(),
+                    };
+        
+                    fetch('https://backend-mdx.onrender.com/collections/Orders', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(order)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Order placed successfully:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error placing order:', error);
+                    });
+                },
             },
-            }
+            mounted() {
+                this.fetchLessons(); 
+                this.updateProdAvail();
+            },
         });
 
 </script>
