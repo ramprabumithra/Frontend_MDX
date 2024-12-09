@@ -109,21 +109,13 @@
         computed: {
 
             filterAndSort() {
-                if (!this.products || this.products.length === 0) return [];
-        
-                let filteredProds = this.products.filter(product => {
-                    // Check for undefined or null values before calling toLowerCase()
-                    const title = product.title ? product.title.toLowerCase() : '';
-                    const location = product.location ? product.location.toLowerCase() : '';
-                    const price = product.price ? product.price.toString() : '';
-                    const availability = product.availability ? product.availability.toString() : '';
-        
-                    return title.includes(this.searchQuery.toLowerCase()) ||
-                        location.includes(this.searchQuery.toLowerCase()) ||
-                        price.includes(this.searchQuery) ||
-                        availability.includes(this.searchQuery);
-                });
-        
+                let filteredProds = this.products.filter(product =>
+                    product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                    product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                    product.price.toString().includes(this.searchQuery) ||
+                    product.availability.toString().includes(this.searchQuery)
+                );
+
                 if (this.sortOrder === 'price-asc') {
                     filteredProds.sort((a, b) => a.price - b.price);
                 } else if (this.sortOrder === 'price-desc') {
@@ -133,14 +125,14 @@
                 } else if (this.sortOrder === 'availability-desc') {
                     filteredProds.sort((a, b) => b.availability - a.availability);
                 }
-        
+
                 return filteredProds;
             },
-        
-            cartItems() {
-                return this.cart.reduce((total, item) => total + item.quantity, 0);
-            }
-        },
+
+        cartItems() {
+            return this.cart.reduce((total, item) => total + item.quantity, 0);
+        }
+    },
 
         methods: {
             addToCart(product) {
@@ -176,17 +168,18 @@
                 });
             },
 
-        fetchData() {
-          fetch(`https://backend-mdx.onrender.com/collections/Lessons`)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('Fetched products:', data);
-                this.products = data;
-            })
-            .catch((error) => {
-              console.error("Error fetching lessons:", error);
-            });
-        },
+            fetchData() {
+                fetch('https://backend-mdx.onrender.com/collections/Lessons')
+                    .then(response => response.json())  // Parse the JSON data from the response
+                    .then(data => {
+                        console.log('Fetched products:', data);
+                        this.products = data;  // Store the fetched lessons into the `products` array
+                    })
+                    .catch(error => {
+                        console.error('Error fetching lessons:', error);  // Log any errors
+                    });
+            },
+
 
             updateProdAvail() {
                 fetch(`https://backend-mdx.onrender.com/collections/Lessons`)
@@ -214,7 +207,7 @@
             }
         },
         mounted() {
-            // Fetch lessons from the backend when the component is mounted
+            
             this.fetchData();
             
             // Check if there's any saved cart data in localStorage
