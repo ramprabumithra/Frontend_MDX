@@ -90,133 +90,134 @@
     </div>
 <script>
     new Vue({
-    el: '#app',
-    data: {
-        school: {
-            name: 'The Middlesex School',
-            logo: 'assets/the-mdx-school.png'
+        el: '#app',
+        data: {
+            school: {
+                name: 'The Middlesex School',
+                logo: 'assets/the-mdx-school.png'
+            },
+            cart: [],
+            showSchoolInfo: false,
+            showCheckout: false,
+            showInfo: false,
+            showContact: false,
+            showSort: false,
+            searchQuery: '',
+            sortOrder: '',
+            products: [],
         },
-        cart: [],
-        showSchoolInfo: false,
-        showCheckout: false,
-        showInfo: false,
-        showContact: false,
-        showSort: false,
-        searchQuery: '',
-        sortOrder: '',
-        products: [],
-    },
-    computed: {
-        filterAndSort() {
-            let filteredProds = this.products.filter(product =>
-                product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                product.price.toString().includes(this.searchQuery) ||
-                product.availability.toString().includes(this.searchQuery)
-            );
+        computed: {
+            filterAndSort() {
+                let filteredProds = this.products.filter(product =>
+                    product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                    product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                    product.price.toString().includes(this.searchQuery) ||
+                    product.availability.toString().includes(this.searchQuery)
+                );
 
-            if (this.sortOrder === 'price-asc') {
-                filteredProds.sort((a, b) => a.price - b.price);
-            } else if (this.sortOrder === 'price-desc') {
-                filteredProds.sort((a, b) => b.price - a.price);
-            } else if (this.sortOrder === 'availability-asc') {
-                filteredProds.sort((a, b) => a.availability - b.availability);
-            } else if (this.sortOrder === 'availability-desc') {
-                filteredProds.sort((a, b) => b.availability - a.availability);
-            }
-
-            return filteredProds;
-        },
-
-        cartItems() {
-            return this.cart.reduce((total, item) => total + item.quantity, 0);
-        }
-    },
-    methods: {
-        addToCart(product) {
-            if (product.availability > 0) {
-                product.availability -= 1;
-                const cartItem = this.cart.find(item => item.id === product.id);
-                if (cartItem) {
-                    cartItem.quantity += 1;
-                } else {
-                    this.cart.push({ ...product, quantity: 1 });
+                if (this.sortOrder === 'price-asc') {
+                    filteredProds.sort((a, b) => a.price - b.price);
+                } else if (this.sortOrder === 'price-desc') {
+                    filteredProds.sort((a, b) => b.price - a.price);
+                } else if (this.sortOrder === 'availability-asc') {
+                    filteredProds.sort((a, b) => a.availability - b.availability);
+                } else if (this.sortOrder === 'availability-desc') {
+                    filteredProds.sort((a, b) => b.availability - a.availability);
                 }
 
-                // Update the availability in the backend after adding to cart
-                this.prodAvailServer(product.title, product.availability);
-                localStorage.setItem('cart', JSON.stringify(this.cart));
+                return filteredProds;
+            },
+
+            cartItems() {
+                return this.cart.reduce((total, item) => total + item.quantity, 0);
             }
         },
+        methods: {
+            addToCart(product) {
+                if (product.availability > 0) {
+                    product.availability -= 1;
+                    const cartItem = this.cart.find(item => item.id === product.id);
+                    if (cartItem) {
+                        cartItem.quantity += 1;
+                    } else {
+                        this.cart.push({ ...product, quantity: 1 });
+                    }
 
-        prodAvailServer(lessonTitle, updatedAvailability) {
-            fetch(`https://backend-mdx.onrender.com/collections/Lessons/${lessonTitle}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    availability: updatedAvailability
+                    // Update the availability in the backend after adding to cart
+                    this.prodAvailServer(product.title, product.availability);
+                    localStorage.setItem('cart', JSON.stringify(this.cart));
+                }
+            },
+
+            prodAvailServer(lessonTitle, updatedAvailability) {
+                fetch(`https://backend-mdx.onrender.com/collections/Lessons/${lessonTitle}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        availability: updatedAvailability
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Lesson availability updated successfully:', data);
-            })
-            .catch(error => {
-                console.error('Error updating lesson availability:', error);
-            });
-        },
-
-        fetchLessons() {
-            fetch("https://backend-mdx.onrender.com/collections/Lessons")
-                .then((response) => response.json())
-                .then((data) => {
-                    this.products = data;
-                })
-                .catch((error) => {
-                    console.error("Error fetching lessons:", error);
-                });
-        },
-
-        updateProdAvail() {
-            fetch(`https://backend-mdx.onrender.com/collections/Lessons`)
                 .then(response => response.json())
                 .then(data => {
-                    data.forEach(updatedLesson => {
-                        const product = this.products.find(p => p.title === updatedLesson.lessonTitle);
-                        if (product) {
-                            product.availability = updatedLesson.availability;
-                        }
-                    });
-                    this.$forceUpdate();  // Force a re-render after updating availability
+                    console.log('Lesson availability updated successfully:', data);
                 })
                 .catch(error => {
-                    console.error('Error fetching updated availability:', error);
+                    console.error('Error updating lesson availability:', error);
                 });
+            },
+
+            fetchLessons() {
+                fetch("https://backend-mdx.onrender.com/collections/Lessons")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        this.products = data;
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching lessons:", error);
+                    });
+            },
+
+            updateProdAvail() {
+                fetch(`https://backend-mdx.onrender.com/collections/Lessons`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(updatedLesson => {
+                            const product = this.products.find(p => p.title === updatedLesson.lessonTitle);
+                            if (product) {
+                                product.availability = updatedLesson.availability;
+                            }
+                        });
+                        this.$forceUpdate();  // Force a re-render after updating availability
+                    })
+                    .catch(error => {
+                        console.error('Error fetching updated availability:', error);
+                    });
+            },
+
+            sortToggle() {
+                this.showSort = !this.showSort;
+            },
+
+            searchLessons() {
+                // No need to do anything specific here anymore
+            }
         },
+        mounted() {
+            // Fetch lessons from the backend when the component is mounted
+            this.fetchLessons();
 
-        sortToggle() {
-            this.showSort = !this.showSort;
-        },
+            // Check if there's any saved cart data in localStorage
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                this.cart = JSON.parse(savedCart);
+            }
 
-        searchLessons() {
-            this.fetchSearchResults();
+            // Optionally, update product availability from the backend if needed
+            this.updateProdAvail();
         }
-    },
-    mounted() {
-        // Fetch lessons from the backend when the component is mounted
-        this.fetchLessons();
-
-        // Check if there's any saved cart data in localStorage
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
-            this.cart = JSON.parse(savedCart);
-        }
-
-        // Optionally, update product availability from the backend if needed
-        this.updateProdAvail();
-    }
-});
+    });
 </script>
+
 
 </body>
 </html>
