@@ -109,7 +109,6 @@
             },
             computed: {
                 filterAndSort() {
-                    console.log('Filtering and sorting products:', this.products);
                     let filteredProds = this.products.filter(product =>
                         product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                         product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
@@ -127,7 +126,6 @@
                         filteredProds.sort((a, b) => b.availability - a.availability);
                     }
 
-                    console.log('Filtered and sorted products:', filteredProds);
                     return filteredProds;
                 },
 
@@ -149,7 +147,6 @@
 
                         this.prodAvailServer(product.title, product.availability);
 
-                        // Update localStorage with the updated cart and product availability
                         localStorage.setItem('cart', JSON.stringify(this.cart));
 
                         const updatedProducts = this.products.map(p =>
@@ -176,7 +173,7 @@
                     });
                 },
 
-                fetchLessons() {
+                fetchData() {
                     fetch("https://backend-mdx.onrender.com/collections/Lessons")
                         .then((response) => response.json())
                         .then((data) => {
@@ -187,21 +184,6 @@
                         });
                 },
 
-                mounted() {
-                    this.fetchLessons();
-                    const savedCart = JSON.parse(localStorage.getItem('cart'));
-                    if (savedCart) {
-                        this.cart = savedCart;
-                    }
-                
-                    const savedProducts = JSON.parse(localStorage.getItem('products'));
-                    if (savedProducts) {
-                        this.products = savedProducts;
-                    } else {
-                        this.updateProdAvail();
-                    }
-                },
-
                 sortToggle() {
                     this.showSort = !this.showSort;
                 },
@@ -209,9 +191,20 @@
                 searchLessons() {
                     console.log('Search method triggered:', this.searchQuery);
                 }
+            },
+            mounted() {
+                this.fetchData();
+                const savedCart = JSON.parse(localStorage.getItem('cart'));
+                if (savedCart) {
+                    this.cart = savedCart;
+                }
+
+                const savedProducts = JSON.parse(localStorage.getItem('products'));
+                if (savedProducts) {
+                    this.products = savedProducts;
+                }
             }
         });
     </script>
-
 </body>
 </html>
