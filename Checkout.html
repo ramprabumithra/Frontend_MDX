@@ -347,7 +347,7 @@
                 Object.assign(this.order, orderData);
             },
 
-            saveDetails(field) {
+            saveDetails(key) {
             if (this.validateInputs(field)) {
                 localStorage.setItem('order', JSON.stringify(this.order));
             }
