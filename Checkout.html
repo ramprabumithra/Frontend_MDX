@@ -68,11 +68,11 @@
         }
 
         button {
-            width: 141px;
-            height: 56px;
+            width: 20px;
+            height: 20px;
             background-color: #F9E450;
             border: 2px solid #1B1B1B;
-            border-radius: 16px;
+            border-radius: 50px;
             font-weight: 800;
             cursor: pointer;
             margin-top: 20px;
@@ -134,6 +134,18 @@
             color: #333;
             margin-top: 20px;
             text-align: right;
+        }
+        .reduce-btn {
+            background-color: #FFBB38;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            color: #fff;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
@@ -341,6 +353,54 @@
                 this.order.gift = false;
                 this.order.method = '';
                 localStorage.removeItem('order');
+            },
+            reduceQuantity(item) {
+                if (item.quantity > 1) {
+                    item.quantity--;
+                } else {
+                    this.removeItem(item);
+                }
+
+                this.updateCartInLocalStorage();
+            },
+            
+            increaseQuantity(item) {
+                if (item.quantity > 1) {
+                    item.quantity++;
+                } else {
+                    this.addItem(item);
+                }
+
+                this.updateCartInLocalStorage();
+            },
+
+            removeItem(item) {
+                const index = this.cart.findIndex(cartItem => cartItem.id === item.id);
+                if (index !== -1) {
+                    this.cart.splice(index, 1);
+                }
+
+                this.updateCartInLocalStorage();
+            },
+
+            addItem(item) {
+                const index = this.cart.findIndex(cartItem => cartItem.id === item.id);
+                if (index === -1) {  
+                    this.cart.push({ ...item, quantity: 1 });  
+                } else {
+                    this.cart[index].quantity += 1; 
+                }
+                this.updateCartInLocalStorage(); 
+            },
+
+            updateCartInLocalStorage() {
+                localStorage.setItem('cart', JSON.stringify(this.cart));
+
+                this.order.lessons = this.cart.map(item => ({
+                    lessonTitle: item.title,
+                    price: item.price,
+                    quantity: item.quantity
+                }));
             },
 
             loadCart() {
