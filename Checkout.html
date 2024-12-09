@@ -1,195 +1,369 @@
-<script>
-new Vue({
-    el: '#app',
-    data: {
-        cart: [],
-        order: {
-            firstName: '',
-            lastName: '',
-            address: '',
-            city: '',
-            zip: '',
-            gift: false,
-            method: '',
-            lessons: []  
-        },
-        cities: {
-            DXB: 'Dubai',
-            ADB: 'Abu Dhabi',
-            SHJ: 'Sharjah',
-            AJM: 'Ajman',
-            UAQ: 'Umm Al Quwain',
-            RAK: 'Ras Al Khaimah',
-            FUJ: 'Fujairah'
-        },
-        validationErrors: {
-            firstName: '',
-            lastName: '',
-            address: '',
-            zip: '',
-            city: '',
-            method: ''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #C1BFFA;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
         }
-    },
-    computed: {
-        completedForm() {
-            return this.order.firstName &&
-                this.order.lastName &&
-                this.order.address &&
-                this.order.city &&
-                this.order.zip &&
-                this.order.method &&
-                Object.values(this.validationErrors).every(error => error === '');
-        },
-        cartTotal() {
-            return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 30px;
+            background-color: white;
+            border: 2px solid #1B1B1B;
+            border-radius: 16px;
+            box-sizing: border-box;
+            box-shadow: 6px 6px 0px #1B1B1B;
+            width: 48vw;
+            margin-top: 50px;
+            margin-bottom: 80px;
         }
-    },
-    methods: {
-        validateFirstName() {
-            if (!this.order.firstName) {
-                this.validationErrors.firstName = "First name is required.";
-            } else if (/\d/.test(this.order.firstName)) {
-                this.validationErrors.firstName = "First name cannot contain numbers.";
-            } else {
-                this.validationErrors.firstName = '';
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #1B1B1B;
+            padding-bottom: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            display: block;
+            width: 100%;
+            max-width: 90%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 2px solid #1B1B1B;
+            border-radius: 16px;
+            background: #FFFFFF;
+            transition: 0.2s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            background-color: #F9E450;
+            border: 3px solid #1B1B1B;
+        }
+
+        button {
+            width: 141px;
+            height: 56px;
+            background-color: #F9E450;
+            border: 2px solid #1B1B1B;
+            border-radius: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.2s ease-out, box-shadow 0.2s;
+        }
+
+        button:hover {
+            background-color: #FFBB38;
+            box-shadow: 0 0 0 4px #C1BFFA;
+        }
+
+        .cart-item {
+            border-bottom: 2px solid #ddd;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background-color: #F9F9F9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item .details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-item .details p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .cart-item .item-summary {
+            display: flex;
+            flex-direction: column;
+            text-align: right;
+        }
+
+        .cart-item .item-summary p {
+            margin: 5px 0;
+        }
+
+        .cart-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 15px;
+            border-radius: 8px;
+        }
+
+        .grand-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+            text-align: right;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h2>Checkout</h2>
+
+        <div v-if="cart.length > 0">
+            <h3>Your Cart</h3>
+            <div v-for="item in cart" :key="item.id" class="cart-item">
+                <img :src="item.img" alt="Product Image" />
+                <div class="details">
+                    <p><strong>{{ item.title }}</strong></p>
+                    <p>Price: ${{ item.price }}</p>
+                    <p>Quantity: {{ item.quantity }}</p>
+                </div>
+                <div class="item-summary">
+                    <p><strong>Total: ${{ item.price * item.quantity }}</strong></p>
+                    <div>
+                        <button class="reduce-btn" @click="increaseQuantity(item)" :disabled="item.availability <= 0">
+                        +
+                    </button>
+                        <button class="reduce-btn" @click="reduceQuantity(item)">-</button>
+                    </div>
+                </div>
+            </div>
+            <div class="grand-total">
+                <p><strong>Grand Total: ${{ cartTotal }}</strong></p>
+            </div>
+        </div>
+        <div v-else>
+            <p>Your cart is empty.</p>
+        </div>
+
+        <form @submit.prevent="submitForm">
+            <p>
+                <strong>First Name:</strong>
+                <input v-model="order.firstName" type="text" @input="validateInput('firstName')" />
+                <span v-if="errors.firstName" class="error">{{ errors.firstName }}</span>
+            </p>
+            <p>
+                <strong>Last Name:</strong>
+                <input v-model="order.lastName" type="text" @input="validateInput('lastName')" />
+                <span v-if="errors.lastName" class="error">{{ errors.lastName }}</span>
+            </p>
+            <p>
+                <strong>Address:</strong>
+                <input v-model="order.address" type="text" @input="validateInput('address')" />
+                <span v-if="errors.address" class="error">{{ errors.address }}</span>
+            </p>
+            <p>
+                <strong>City:</strong>
+                <select v-model="order.city" @change="validateInput('city')">
+                    <option v-for="(city, key) in cities" :value="city">{{ key }}</option>
+                </select>
+                <span v-if="errors.city" class="error">{{ errors.city }}</span>
+            </p>
+            <p>
+                <strong>Zip/Postal Code:</strong>
+                <input v-model.number="order.zip" type="number" @input="validateInput('zip')" />
+                <span v-if="errors.zip" class="error">{{ errors.zip }}</span>
+            </p>
+            <p>
+                <input type="checkbox" id="gift" v-model="order.gift" @change="validateInput('gift')" />
+                <label for="gift">Send as a Gift</label>
+            </p>
+            <p>
+                <input type="radio" id="home" value="Home" v-model="order.method" @change="validateInput('method')" />
+                <label for="home">Home</label>
+                <input type="radio" id="business" value="Business" v-model="order.method" @change="validateInput('method')" />
+                <label for="business">Business</label>
+                <span v-if="errors.method" class="error">{{ errors.method }}</span>
+            </p>
+
+            <button :disabled="!isFormValid" type="submit">Place Order</button>
+        </form>
+    </div>
+
+    <script>
+    new Vue({
+        el: '#app',
+        data: {
+            cart: [],
+            order: {
+                firstName: '',
+                lastName: '',
+                address: '',
+                city: '',
+                zip: '',
+                gift: false,
+                method: '',
+                lessons: []
+            },
+            cities: {
+                DXB: 'Dubai',
+                ADB: 'Abu Dhabi',
+                SHJ: 'Sharjah',
+                AJM: 'Ajman',
+                UAQ: 'Umm Al Quwain',
+                RAK: 'Ras Al Khaimah',
+                FUJ: 'Fujairah'
+            },
+            errors: {
+                firstName: '',
+                lastName: '',
+                address: '',
+                city: '',
+                zip: '',
+                method: ''
             }
         },
-
-        validateLastName() {
-            if (!this.order.lastName) {
-                this.validationErrors.lastName = "Last name is required.";
-            } else if (/\d/.test(this.order.lastName)) {
-                this.validationErrors.lastName = "Last name cannot contain numbers.";
-            } else {
-                this.validationErrors.lastName = '';
+        computed: {
+            isFormValid() {
+                return !Object.values(this.errors).some(error => error);
+            },
+            cartTotal() {
+                return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
             }
         },
+        methods: {
+            validateInput(field) {
+                this.errors = {}; // Reset errors
 
-        validateAddress() {
-            if (!this.order.address) {
-                this.validationErrors.address = "Address is required.";
-            } else if (/^\d+$/.test(this.order.address)) {
-                this.validationErrors.address = "Address cannot contain only numbers.";
-            } else {
-                this.validationErrors.address = '';
-            }
-        },
+                if (field === 'firstName' || field === 'lastName' || field === 'address') {
+                    if (/\d/.test(this.order[field])) {
+                        this.errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} cannot contain numbers.`;
+                    }
+                    if (!this.order[field].trim()) {
+                        this.errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`;
+                    }
+                }
 
-        validateZip() {
-            if (!this.order.zip) {
-                this.validationErrors.zip = "Postal code is required.";
-            } else if (!/^\d{5,6}$/.test(this.order.zip)) {
-                this.validationErrors.zip = "Postal code must be a valid number with 5 or 6 digits.";
-            } else {
-                this.validationErrors.zip = '';
-            }
-        },
+                if (field === 'zip') {
+                    if (!/^\d{5,6}$/.test(this.order.zip)) {
+                        this.errors.zip = 'Zip/Postal Code must be a valid 5-6 digit number.';
+                    }
+                }
 
-        validateCity() {
-            if (!this.order.city) {
-                this.validationErrors.city = "Please select a city.";
-            } else {
-                this.validationErrors.city = '';
-            }
-        },
+                if (field === 'city') {
+                    if (!this.order.city) {
+                        this.errors.city = 'City is required.';
+                    }
+                }
 
-        validateMethod() {
-            if (!this.order.method) {
-                this.validationErrors.method = "Please select a delivery method.";
-            } else {
-                this.validationErrors.method = '';
-            }
-        },
+                if (field === 'method') {
+                    if (!this.order.method) {
+                        this.errors.method = 'Delivery method is required.';
+                    }
+                }
+            },
 
-        saveDetails(key) {
-            this.validateFirstName();
-            this.validateLastName();
-            this.validateAddress();
-            this.validateZip();
-            this.validateCity();
-            this.validateMethod();
+            submitForm() {
+                
+                this.validateInput('firstName');
+                this.validateInput('lastName');
+                this.validateInput('address');
+                this.validateInput('zip');
+                this.validateInput('city');
+                this.validateInput('method');
 
-            localStorage.setItem('order', JSON.stringify(this.order));
-        },
+                if (this.isFormValid) {
+                    const orderData = {
+                        firstName: this.order.firstName,
+                        lastName: this.order.lastName,
+                        address: this.order.address,
+                        city: this.order.city,
+                        zip: this.order.zip,
+                        gift: this.order.gift,
+                        method: this.order.method,
+                        lessons: this.order.lessons,
+                    };
 
-        submitForm() {
-            // Trigger validation on submit
-            this.validateFirstName();
-            this.validateLastName();
-            this.validateAddress();
-            this.validateZip();
-            this.validateCity();
-            this.validateMethod();
+                    fetch('https://backend-mdx.onrender.com/collections/Orders', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderData),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert('Order placed successfully!');
+                        this.clearCart();
+                        this.clearDetails();
+                    })
+                    .catch(error => {
+                        console.error('Error placing order:', error);
+                        alert('There was an error placing your order. Please try again.');
+                    });
+                } else {
+                    alert("Please fix the errors before submitting.");
+                }
+            },
 
-            // If no errors, proceed with submission
-            if (this.completedForm) {
-                const orderData = {
-                    firstName: this.order.firstName,
-                    lastName: this.order.lastName,
-                    address: this.order.address,
-                    city: this.order.city,
-                    zip: this.order.zip,
-                    gift: this.order.gift,
-                    method: this.order.method,
-                    lessons: this.order.lessons,
-                };
+            clearCart() {
+                this.cart = [];
+                localStorage.removeItem('cart');
+            },
 
-                fetch('https://backend-mdx.onrender.com/collections/Orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert('Order placed successfully!');
-                    this.clearCart();
-                    this.clearDetails();
-                })
-                .catch(error => {
-                    console.error('Error placing order:', error);
-                    alert('There was an error placing your order. Please try again.');
-                });
-            } else {
-                alert("Please fix the errors in the form.");
-            }
-        },
+            clearDetails() {
+                this.order.firstName = '';
+                this.order.lastName = '';
+                this.order.address = '';
+                this.order.city = '';
+                this.order.zip = '';
+                this.order.gift = false;
+                this.order.method = '';
+                localStorage.removeItem('order');
+            },
 
-        clearCart() {
-            this.cart = [];
-            localStorage.removeItem('cart');
-        },
+            loadCart() {
+                const cartData = JSON.parse(localStorage.getItem('cart')) || [];
+                this.cart = cartData;
+                this.order.lessons = cartData.map(item => ({
+                    lessonTitle: item.title,
+                    price: item.price,
+                    quantity: item.quantity,
+                }));
+            },
 
-        clearDetails() {
-            this.order.firstName = '';
-            this.order.lastName = '';
-            this.order.address = '';
-            this.order.city = '';
-            this.order.zip = '';
-            this.order.gift = false;
-            this.order.method = '';
-            localStorage.removeItem('order');
-        },
-
-        loadCart() {
-            const cartData = JSON.parse(localStorage.getItem('cart')) || [];
-            this.cart = cartData;
-            this.order.lessons = cartData.map(item => ({
-                lessonTitle: item.title,
-                price: item.price,
-                quantity: item.quantity,
-            }));
-        },
-
-        loadDetails() {
-            const orderData = JSON.parse(localStorage.getItem('order')) || {};
-            Object.assign(this.order, orderData);
+            loadDetails() {
+                const orderData = JSON.parse(localStorage.getItem('order')) || {};
+                Object.assign(this.order, orderData);
+            },
         },
 
         mounted() {
             this.loadCart();
             this.loadDetails();
         }
-    }
-});
-</script>
+    });
+    </script>
+</body>
+</html>
