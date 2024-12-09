@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -149,7 +148,6 @@
 
                         this.prodAvailServer(product.title, product.availability);
 
-                        
                         localStorage.setItem('cart', JSON.stringify(this.cart));
 
                         const updatedProducts = this.products.map(p =>
@@ -160,7 +158,7 @@
                 },
 
                 prodAvailServer(lessonTitle, updatedAvailability) {
-                    fetch(https://backend-mdx.onrender.com/collections/Lessons/${lessonTitle}, {
+                    fetch(`https://backend-mdx.onrender.com/collections/Lessons/${lessonTitle}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -187,27 +185,23 @@
                         });
                 },
 
-                mounted() {
-                    this.fetchLessons();
-                    const savedCart = JSON.parse(localStorage.getItem('cart'));
-                    if (savedCart) {
-                        this.cart = savedCart;
-                    }
-                
-                    const savedProducts = JSON.parse(localStorage.getItem('products'));
-                    if (savedProducts) {
-                        this.products = savedProducts;
-                    } else {
-                        this.updateProdAvail();
-                    }
-                },
-
                 sortToggle() {
                     this.showSort = !this.showSort;
                 },
 
                 searchLessons() {
                     console.log('Search method triggered:', this.searchQuery);
+                }
+            },
+            mounted() {
+                this.fetchLessons();
+                const savedCart = JSON.parse(localStorage.getItem('cart'));
+                if (savedCart) {
+                    this.cart = savedCart;
+                }
+                const savedProducts = JSON.parse(localStorage.getItem('products'));
+                if (savedProducts) {
+                    this.products = savedProducts;
                 }
             }
         });
