@@ -69,7 +69,7 @@
 
             <section id="product-section" v-if="filterAndSort.length > 0">
                 <div v-for="product in filterAndSort" :key="product.id" class="product-card">
-                    <img :src="`/assets/${product.img}`" class="product-img" alt="Product Image">
+                    <img :src="product.img" class="product-img" alt="Product Image">
                     <h2>{{ product.title }}</h2>
                     <p>{{ product.location }}</p>
                     <p v-if="product.availability > 0">{{ product.availability }} seats available</p>
