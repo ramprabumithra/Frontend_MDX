@@ -175,16 +175,27 @@
                 },
 
             fetchLessons() {
-                fetch('https://backend-mdx.onrender.com/collections/Lessons')
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Fetched lessons:', data);  // Check the data returned from the API
-                        this.products = data;  // Store fetched lessons in products
-                    })
-                    .catch(error => {
-                        console.error('Error fetching lessons:', error);
-                    });
+                fetch('https://backend-mdx.onrender.com/collections/Lessons', {
+                    method: 'GET',  // Explicitly set method to GET
+                    headers: { 
+                        'Content-Type': 'application/json'  // Ensure the header is set correctly
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Fetched lessons:', data);  // Check the data returned from the API
+                    this.products = data;  // Store fetched lessons in products
+                })
+                .catch(error => {
+                    console.error('Error fetching lessons:', error);
+                });
             },
+
 
 
             mounted() {
