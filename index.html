@@ -218,23 +218,45 @@ new Vue({
         },
 
         searchLessons() {
-            console.log('Search method triggered:', this.searchQuery); 
+    console.log('Search method triggered:', this.searchQuery); 
+    
+    const query = this.searchQuery.trim();
+    if (query) {
+        // Try converting the query to a number to handle numeric searches
+        const numericQuery = !isNaN(query) ? parseFloat(query) : null;
 
-            const query = this.searchQuery.trim().toLowerCase();  // Clean the query
+        fetch(`https://backend-mdx.onrender.com/search?query=${query}&collectionName=Lessons`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Search results:', data);
+                // Map the response to the expected format for Vue to use
+                this.products = data.map(product => ({
+                    id: product._id,
+                    title: product.lessonTitle,
+                    location: product.location,
+                    price: product.price,
+                    availability: product.availability,
+                    img: product.img || 'default.png',
+                    rating: product.rating || 5
+                }));
 
-            if (query) {
-                // Use filter to check for partial matches
-                this.filteredProds = this.products.filter(product =>
-                    product.title.toLowerCase().includes(query) ||
-                    product.location.toLowerCase().includes(query) ||
-                    product.price.toString().includes(query) ||
-                    product.availability.toString().includes(query)
-                );
-            } else {
-                this.filteredProds = this.products;  // Reset if query is empty
-            }
-        },
-    },
+                // Now handle numeric search (price and availability)
+                if (numericQuery !== null) {
+                    // Filter products based on numeric query
+                    this.products = this.products.filter(product => 
+                        product.price === numericQuery || 
+                        product.availability === numericQuery
+                    );
+                }
+            })
+            .catch(error => {
+                console.error('Error searching lessons:', error);
+            });
+    } else {
+        this.fetchLessons();  // Reset to all lessons if search is empty
+    }
+},
+
     mounted() {
         this.fetchLessons(); 
         this.updateProdAvail();
