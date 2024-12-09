@@ -16,7 +16,40 @@
 <body>
     <div id="app">
         <header>
-            <!-- Header content (same as before) -->
+                        <nav id="navigation-bar">
+                <figure @mouseover="showSchoolInfo = true" @mouseleave="showSchoolInfo = false" class="nav-item">
+                    <img style="width:50px;height:50px;" :src="school.logo" class="nav-logo" alt="School Logo">
+                </figure>
+                <p @mouseover="showInfo = true" @mouseleave="showInfo = false" class="nav-item">INFO</p>
+                <p @mouseover="showContact = true" @mouseleave="showContact = false" class="nav-item">CONTACT</p>
+                <div id="search-box">
+                    <i class="fa fa-search search-icon"></i>
+                    <input type="text" id="search-area" placeholder="Search" v-model="searchQuery" @input="searchLessons">
+                </div>
+
+                <button class="nav-item nav-button" @click="sortToggle">
+                    SORT <i class="fa fa-filter"></i>
+                </button>
+
+                <button class="nav-item nav-button" :disabled="cart.length === 0">
+                    <a href="Checkout.html">
+                        CHECKOUT <i class="fa fa-cart-shopping"></i> <span class="cart-count">{{ cartItems }}</span>
+                    </a>
+                </button>
+            </nav>
+
+            <div v-if="showSchoolInfo" class="info-box" @mouseover="showSchoolInfo = true" @mouseleave="showSchoolInfo = false">
+                <h1>{{ school.name }}</h1>
+                <img :src="school.logo" alt="School Logo" style="width: 50px;">
+            </div>
+
+            <div v-if="showInfo" class="info-box" @mouseover="showInfo = true" @mouseleave="showInfo = false">
+                <p>This web app allows students and parents to explore and purchase after-school classes and activities.</p>
+            </div>
+
+            <div v-if="showContact" class="info-box" @mouseover="showContact = true" @mouseleave="showContact = false">
+                <p>Contact us at <a href="tel:+123456789">+1 234 56789</a> or <a href="mailto:someone@example.com">someone@example.com</a></p>
+            </div>
         </header>
 
         <main>
