@@ -156,8 +156,13 @@
                         }
 
                         this.prodAvailServer(product.title, product.availability);
+
                         localStorage.setItem('cart', JSON.stringify(this.cart));
-                        localStorage.setItem('products', JSON.stringify(this.products));
+
+                        const updatedProducts = this.products.map(p =>
+                            p.id === product.id ? { ...p, availability: product.availability } : p
+                        );
+                        localStorage.setItem('products', JSON.stringify(updatedProducts));
                     }
                 },
 
@@ -205,25 +210,24 @@
                 },
 
                 searchLessons() {
-                    console.log('Search method triggered:', this.searchQuery); 
+                    console.log('Search method triggered:', this.searchQuery);
                 },
 
                 mounted() {
-                    this.filteredProds = this.products; 
                     const savedCart = JSON.parse(localStorage.getItem('cart'));
-                        if (savedCart) {
-                            this.cart = savedCart;
-                        }
+                    if (savedCart) {
+                        this.cart = savedCart;
+                    }
 
-                        const savedProducts = JSON.parse(localStorage.getItem('products'));
-                        if (savedProducts) {
-                            this.products = savedProducts;
-                        } else {
-                            this.updateProdAvail();
-                        }
+                    const savedProducts = JSON.parse(localStorage.getItem('products'));
+                    if (savedProducts) {
+                        this.products = savedProducts;
+                    } else {
+                        this.updateProdAvail();
                     }
                 }
-            });
+            }
+        });
     </script>
 
 </body>
