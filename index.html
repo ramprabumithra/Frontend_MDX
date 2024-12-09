@@ -170,7 +170,7 @@
                         console.error('Error updating lesson availability:', error);
                     });
                 },
-        
+
                 updateProdAvail() {
                     fetch(`https://backend-mdx.onrender.com/collections/Lessons`)
                         .then(response => response.json())
@@ -187,7 +187,7 @@
                             console.error('Error fetching updated availability:', error);
                         });
                 },
-        
+                
                 fetchLessons() {
                     fetch('https://backend-mdx.onrender.com/collections/Lessons')  
                     .then(response => response.json())
