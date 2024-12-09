@@ -267,10 +267,9 @@
             },
         
             submitForm() {
-              if (!Array.isArray(this.order.lessons)) {
-                alert('Lessons field must be an array');
-                return;
-              }
+                if (!Array.isArray(this.order.lessons)) {
+                    this.order.lessons = [this.order.lessons]; 
+                }
         
               const order = {
                 firstName: this.order.firstName,
