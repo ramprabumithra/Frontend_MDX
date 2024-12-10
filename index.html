@@ -190,10 +190,10 @@ new Vue({
         },
 
         fetchLessons() {
-            fetch('https://backend-mdx.onrender.com/collections/Lessons')  // Ensure to use the Render backend URL
+            fetch('https://backend-mdx.onrender.com/collections/Lessons')  
             .then(response => response.json())
             .then(data => {
-                console.log(data);  // Log the fetched data
+                console.log(data);  
                 if (Array.isArray(data)) {
                     this.products = data.map(product => ({
                         id: product._id,  
@@ -201,7 +201,7 @@ new Vue({
                         location: product.location,
                         price: product.price,
                         availability: product.availability,
-                        img: product.img || 'default.png',  // Ensure an image exists
+                        img: product.img || 'default.png', 
                         rating: product.rating || 5  
                     }));
                 } else {
