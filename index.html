@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
 </head>
+
 <body>
     <div id="app">
         <header>
@@ -37,7 +38,6 @@
                 </button>
             </nav>
 
-            <!-- Info Boxes -->
             <div v-if="showSchoolInfo" class="info-box" @mouseover="showSchoolInfo = true" @mouseleave="showSchoolInfo = false">
                 <h1>{{ school.name }}</h1>
                 <img :src="school.logo" alt="School Logo" style="width: 50px;">
@@ -67,8 +67,8 @@
                 </div>
             </section>
 
-            <section id="product-section" v-if="filterAndSort.length > 0">
-                <div v-for="product in filterAndSort" :key="product.id" class="product-card">
+            <section id="product-section" v-if="searchAndFilter.length > 0">
+                <div v-for="product in searchAndFilter" :key="product.id" class="product-card">
                     <img :src="product.img" class="product-img" alt="Product Image">
                     <h2>{{ product.title }}</h2>
                     <p>{{ product.location }}</p>
@@ -90,57 +90,51 @@
     </div>
 
     <script>
-    new Vue({
-        el: '#app',
-        data: {
-            school: {
-                name: 'The Middlesex School',
-                logo: 'assets/the-mdx-school.png'
-            },
-            cart: [],
-            showSchoolInfo: false,
-            showInfo: false,
-            showContact: false,
-            showSort: false,
-            searchQuery: '',
-            sortOrder: '',
-            products: [],
-            filteredProds: []  
+new Vue({
+    el: '#app',
+    data: {
+        school: {
+            name: 'The Middlesex School',
+            logo: 'assets/the-mdx-school.png'
         },
-        computed: {
-            filterAndSort() {
-                let filteredProds = this.products.filter(product =>
-                    product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    product.price.toString().includes(this.searchQuery) ||
-                    product.availability.toString().includes(this.searchQuery)
-                );
+        cart: [],
+        showSchoolInfo: false,
+        showCheckout: false,
+        showInfo: false,
+        showContact: false,
+        showSort: false,
+        searchQuery: '',
+        sortOrder: '',
+        products: [],
+        filteredProds: []  
+    },
+    computed: {
+        searchAndFilter() {
+            let filteredProds = this.products.filter(product =>
+                product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                product.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                product.price.toString().includes(this.searchQuery) ||
+                product.availability.toString().includes(this.searchQuery)
+            );
 
-                if (this.sortOrder === 'price-asc') {
-                    filteredProds.sort((a, b) => a.price - b.price);
-                } else if (this.sortOrder === 'price-desc') {
-                    filteredProds.sort((a, b) => b.price - a.price);
-                } else if (this.sortOrder === 'availability-asc') {
-                    filteredProds.sort((a, b) => a.availability - b.availability);
-                } else if (this.sortOrder === 'availability-desc') {
-                    filteredProds.sort((a, b) => b.availability - a.availability);
-                }
-
-                return filteredProds;
-            },
-
-            cartItems() {
-                return this.cart.reduce((total, item) => total + item.quantity, 0);
-            },
-
-            cartTotal() {
-                return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            if (this.sortOrder === 'price-asc') {
+                filteredProds.sort((a, b) => a.price - b.price);
+            } else if (this.sortOrder === 'price-desc') {
+                filteredProds.sort((a, b) => b.price - a.price);
+            } else if (this.sortOrder === 'availability-asc') {
+                filteredProds.sort((a, b) => a.availability - b.availability);
+            } else if (this.sortOrder === 'availability-desc') {
+                filteredProds.sort((a, b) => b.availability - a.availability);
             }
+
+            return filteredProds;
         },
-        methods: {
-            sortToggle() {
-                this.showSort = !this.showSort;
-            },
+
+        cartItems() {
+            return this.cart.reduce((total, item) => total + item.quantity, 0);
+        }
+    },
+    methods: {
         addToCart(product) {
             if (product.availability > 0) {
                 product.availability -= 1;
@@ -155,7 +149,8 @@
                 localStorage.setItem('cart', JSON.stringify(this.cart));
             }
         },
-            prodAvailServer(lessonTitle, updatedAvailability) {
+
+        prodAvailServer(lessonTitle, updatedAvailability) {
             if (!lessonTitle) {
                 console.error('Error: Invalid lesson title');
                 return;
@@ -253,6 +248,6 @@
         this.updateProdAvail();
     },
 });
-    </script>
+</script>
 </body>
 </html>
