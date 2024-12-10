@@ -267,7 +267,7 @@
                 } else {
                     this.removeItem(item);
                 }
-
+                this.updateCart(); 
                 this.updateCartInLocalStorage();
             },
             
@@ -277,7 +277,7 @@
                 } else {
                     this.addItem(item);
                 }
-
+                this.updateCart(); 
                 this.updateCartInLocalStorage();
             },
 
@@ -286,7 +286,7 @@
                 if (index !== -1) {
                     this.cart.splice(index, 1);
                 }
-
+                this.updateCart(); 
                 this.updateCartInLocalStorage();
             },
 
@@ -297,6 +297,7 @@
                 } else {
                     this.cart[index].quantity += 1; 
                 }
+                this.updateCart(); 
                 this.updateCartInLocalStorage(); 
             },
 
@@ -309,6 +310,29 @@
                     quantity: item.quantity
                 }));
             },
+            updateCart() {
+                localStorage.setItem('cart', JSON.stringify(this.cart));
+                this.order.lessons = this.cart.map(item => ({
+                    lessonTitle: item.title,
+                    price: item.price,
+                    quantity: item.quantity
+                }));
+                localStorage.setItem('order', JSON.stringify(this.order));
+            
+                fetch('https://backend-mdx.onrender.com/collections/Orders', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ lessons: this.order.lessons })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Cart updated successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error updating cart:', error);
+                });
+            },
+
 
             loadCart() {
                 const cartData = JSON.parse(localStorage.getItem('cart')) || [];
@@ -346,6 +370,8 @@
             },
 
             submitForm() {
+                this.updateCart();
+                this.updateCartInLocalStorage();
                 if (!this.order.firstName || /\d/.test(this.order.firstName)) {
                     alert("First name cannot contain numbers and must be filled out.");
                     return;
