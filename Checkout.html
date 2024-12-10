@@ -100,12 +100,12 @@
             border-bottom: none;
         }
 
-        .cart-item .details {
+        .cart-item .forms {
             display: flex;
             flex-direction: column;
         }
 
-        .cart-item .details p {
+        .cart-item .forms p {
             margin: 5px 0;
             color: #555;
         }
@@ -136,7 +136,7 @@
             text-align: right;
         }
 
-        .reduce-btn {
+        .quantity-btn {
             background-color: #FFBB38;
             border-radius: 50%;
             width: 30px;
@@ -149,7 +149,7 @@
             cursor: pointer;
         }
 
-        .reduce-btn:hover {
+        .quantity-btn:hover {
             background-color: #FF8C00;
         }
     </style>
@@ -163,7 +163,7 @@
             <h3>Your Cart</h3>
             <div v-for="item in cart" :key="item.id" class="cart-item">
                 <img :src="item.img" alt="Product Image" />
-                <div class="details">
+                <div class="forms">
                     <p><strong>{{ item.title }}</strong></p>
                     <p>Price: ${{ item.price }}</p>
                     <p>Quantity: {{ item.quantity }}</p>
@@ -171,10 +171,10 @@
                 <div class="item-summary">
                     <p><strong>Total: ${{ item.price * item.quantity }}</strong></p>
                     <div>
-                        <button class="reduce-btn" @click="increaseQuantity(item)" :disabled="item.availability <= 0">
+                        <button class="quantity-btn" @click="increaseQuantity(item)" :disabled="item.availability <= 0">
                         +
                     </button>
-                        <button class="reduce-btn" @click="reduceQuantity(item)">-</button>
+                        <button class="quantity-btn" @click="reduceQuantity(item)">-</button>
                     </div>
                 </div>
             </div>
@@ -188,34 +188,34 @@
 
         <p>
             <strong>First Name:</strong>
-            <input v-model="order.firstName" type="text" @input="saveDetails('firstName')" />
+            <input v-model="order.firstName" type="text" @input="saveforms('firstName')" />
         </p>
         <p>
             <strong>Last Name:</strong>
-            <input v-model="order.lastName" type="text" @input="saveDetails('lastName')" />
+            <input v-model="order.lastName" type="text" @input="saveforms('lastName')" />
         </p>
         <p>
             <strong>Address:</strong>
-            <input v-model="order.address" type="text" @input="saveDetails('address')" />
+            <input v-model="order.address" type="text" @input="saveforms('address')" />
         </p>
         <p>
             <strong>City:</strong>
-            <select v-model="order.city" @change="saveDetails('city')">
+            <select v-model="order.city" @change="saveforms('city')">
                 <option v-for="(city, key) in cities" :value="city">{{ key }}</option>
             </select>
         </p>
         <p>
-            <strong>Zip/Postal Code:</strong>
-            <input v-model.number="order.zip" type="number" @input="saveDetails('zip')" />
+            <strong>zipCode/Postal Code:</strong>
+            <input v-model.number="order.zipCode" type="number" @input="saveforms('zipCode')" />
         </p>
         <p>
-            <input type="checkbox" id="gift" v-model="order.gift" @change="saveDetails('gift')">
+            <input type="checkbox" id="gift" v-model="order.gift" @change="saveforms('gift')">
             <label for="gift">Send as a Gift</label>
         </p>
         <p>
-            <input type="radio" id="home" value="Home" v-model="order.method" @change="saveDetails('method')">
+            <input type="radio" id="home" value="Home" v-model="order.method" @change="saveforms('method')">
             <label for="home">Home</label>
-            <input type="radio" id="business" value="Business" v-model="order.method" @change="saveDetails('method')">
+            <input type="radio" id="business" value="Business" v-model="order.method" @change="saveforms('method')">
             <label for="business">Business</label>
         </p>
 
@@ -232,7 +232,7 @@
                 lastName: '',
                 address: '',
                 city: '',
-                zip: '',
+                zipCode: '',
                 gift: false,
                 method: '',
                 lessons: []  
@@ -253,7 +253,7 @@
                     this.order.lastName &&
                     this.order.address &&
                     this.order.city &&
-                    this.order.zip &&
+                    this.order.zipCode &&
                     this.order.method;
             },
             cartTotal() {
@@ -320,12 +320,12 @@
                 }));
             },
 
-            loadDetails() {
+            loadforms() {
                 const orderData = JSON.parse(localStorage.getItem('order')) || {};
                 Object.assign(this.order, orderData);
             },
 
-            saveDetails(key) {
+            saveforms(key) {
                 localStorage.setItem('order', JSON.stringify(this.order));
             },
 
@@ -334,12 +334,12 @@
                 localStorage.removeItem('cart');
             },
 
-            clearDetails() {
+            clearForms() {
                 this.order.firstName = '';
                 this.order.lastName = '';
                 this.order.address = '';
                 this.order.city = '';
-                this.order.zip = '';
+                this.order.zipCode = '';
                 this.order.gift = false;
                 this.order.method = '';
                 localStorage.removeItem('order');
@@ -361,7 +361,7 @@
                     return;
                 }
             
-                if (!this.order.zip || !/^\d{5,6}$/.test(this.order.zip)) {
+                if (!this.order.zipCode || !/^\d{5,6}$/.test(this.order.zipCode)) {
                     alert("Postal code must be a valid number with 5 or 6 digits.");
                     return;
                 }
@@ -381,7 +381,7 @@
                     lastName: this.order.lastName,
                     address: this.order.address,
                     city: this.order.city,
-                    zip: this.order.zip,
+                    zipCode: this.order.zipCode,
                     gift: this.order.gift,
                     method: this.order.method,
                     lessons: this.order.lessons,
@@ -396,7 +396,7 @@
                 .then(data => {
                     alert('Order placed successfully!');
                     this.clearCart();
-                    this.clearDetails();
+                    this.clearForms();
                 })
                 .catch(error => {
                     console.error('Error placing order:', error);
@@ -407,7 +407,7 @@
         },
         mounted() {
             this.loadCart();
-            this.loadDetails();
+            this.loadforms();
         }
     });
     </script>
